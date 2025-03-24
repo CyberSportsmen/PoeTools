@@ -74,16 +74,29 @@ const std::map<equipmentTypes, std::string> equipmentTypesToString = {
 
 class Mod
 {
-    std::string shortName;
-    std::string longName; // în joc, când apeși Alt, ți se dezvăluie mod-ul și ți se spune ce tier este, plus o descriere mai lungă, cu range-urile valorilor
+    std::string shortName{"GenericShortModName"};
+    std::string longName{"GenericLongModName"}; // în joc, când apeși Alt, ți se dezvăluie mod-ul și ți se spune ce tier este, plus o descriere mai lungă, cu range-urile valorilor
     unsigned int nrOfNumericValues{0};
-    unsigned int tier{};
+    unsigned int tier{1};
 public:
     Mod(std::string short_name, std::string long_name, const unsigned int tier)
         : shortName(std::move(short_name)),
           longName(std::move(long_name)),
           tier(tier)
     {
+    }
+    Mod() = default;
+
+    friend bool operator==(const Mod& lhs, const Mod& rhs)
+    {
+        return lhs.shortName == rhs.shortName
+            && lhs.longName == rhs.longName
+            && lhs.tier == rhs.tier;
+    }
+
+    friend bool operator!=(const Mod& lhs, const Mod& rhs)
+    {
+        return !(lhs == rhs);
     }
 };
 
@@ -97,15 +110,9 @@ class ModPool
 
 class Item
 {
-    static unsigned int last_id_created; // counter to track the last created ID
-    Item() : unique_id(++last_id_created) // default constructor increments the counter
-    {
-    }
-
     std::string name{"genericItem"};
     std::string description{"This item has no description"};
     itemTypes type{EQUIPMENT}; // daca nu specificam, va fi un equipment generic, alb, fara mod-uri, de dimensiuni 2x2
-    unsigned int unique_id;
     unsigned int width{2};
     unsigned int height{2};
     unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
@@ -126,8 +133,8 @@ class Item
     std::vector<Mod> affixes{}; // empty by default
     std::vector<Mod> implicit{}; // empty by default
 public:
+    Item() = default;
     Item(const std::string& name, const std::string& description, const itemTypes type, const itemRarities rarity, const unsigned int quality, const unsigned int itemLevel, const unsigned int width, const unsigned int height, const unsigned int maxStackSize, const unsigned int minStackSize, const unsigned int maxSockets, const unsigned int sockets)
-    : unique_id(++last_id_created) // initialize const member using initializer list
     {
         this->name = name;
         // pentru texturi, numele texturii va fi chiar numele item-ului, deci un item cu același nume va avea mereu aceeași imagine
@@ -324,9 +331,8 @@ public:
 
 class Inventory // 6x10
 {
-    
     std::array<std::array<Item, 10>, 6> inventory{}; // 6x10
-    // place item
+
     static bool inside(unsigned int x, unsigned int y)
     {
         if (x < 6 && y < 10)
@@ -347,8 +353,24 @@ class Inventory // 6x10
         }
         return true;
     }
+    void set_item_in_inventory_slot(const Item& item, const unsigned int row, const unsigned int column)
+    {
+        inventory[row][column] = item;
+        //this->inventory = inventory; trebuie asa ceva oare?
+    }
 public:
-    // arata ca dracu
+    // place item
+    Inventory()
+    {
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            for (unsigned int j = 0; j < 10; j++)
+            {
+                inventory[i][j] = Item("genericItem", "This is a generic item", EQUIPMENT, NORMAL, 0, 100, 1, 1, 1, 1, 1, 1);
+            }
+        }
+    }
+    // arata ca naiba
     void place_item(const Item& item)
     {
         unsigned int item_width = item.get_width();
@@ -359,13 +381,14 @@ public:
             {
                 if (check_if_item_fits(item, i, j) == 1)
                 {
-                    for (unsigned int k = i; k < i + item_width; k++)
+                    for (unsigned int k = i; k < i + item_height; k++)
                     {
-                        for (unsigned int l = j; l < j + item_height; l++)
+                        for (unsigned int l = j; l < j + item_width; l++)
                         {
                             set_item_in_inventory_slot(item, k, l);
                         }
                     }
+                    return;
                 }
             }
         }
@@ -375,11 +398,7 @@ public:
     {
         return inventory;
     }
-    void set_item_in_inventory_slot(const Item& item, const unsigned int row, const unsigned int column)
-    {
-        inventory[row][column] = item;
-        //this->inventory = inventory; trebuie asa ceva oare?
-    }
+
 
     void print_inventory() const
     {
@@ -405,7 +424,7 @@ int main() {
     // item.print_quality();
     // item.set_quality(28);
     // item.print_quality();
-    Inventory inventory;
+    Inventory inventory{};
     inventory.place_item(item);
     inventory.print_inventory();
 
