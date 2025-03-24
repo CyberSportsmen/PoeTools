@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include <utility>
 
-#include <Helper.h>
+//#include <Helper.h>
 #include "ResourceManager.hpp"
 
 enum itemTypes
@@ -78,7 +78,8 @@ class Mod
 {
     std::string shortName{"GenericShortModName"};
     std::string longName{"GenericLongModName"}; // în joc, când apeși Alt, ți se dezvăluie mod-ul și ți se spune ce tier este, plus o descriere mai lungă, cu range-urile valorilor
-    unsigned int nrOfNumericValues{0};
+    // TO BE IMPLEMENTED, ALONG WITH TIERS AND A LIST OF MODS FOR MODPOOL!! (depends on iLvl)
+    // unsigned int nrOfNumericValues{0};
     unsigned int tier{1};
 public:
     Mod(std::string short_name, std::string long_name, const unsigned int tier)
@@ -122,6 +123,7 @@ class Item
     unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
     unsigned int maxStackSize{1};
     unsigned int minStackSize{1};
+    unsigned int currentStackSize{1};
     unsigned int maxSockets{4};
     unsigned int sockets{1};
     unsigned int itemLevel{100}; // default maxim, de obicei 85-86 e maximul necesar pentru orice mod T1
@@ -153,35 +155,51 @@ public:
         this->type = type;
         this->width = width;
         this->height = height;
-        if (type == EQUIPMENT)
-        {
-            this->maxSockets = std::min<unsigned int>({width * height, 6u});
-            this->minStackSize = 1;
-            this->maxStackSize = 1;
-        }
-        else if (type == CURRENCY)
-        {
-            this->width = 1;
-            this->height = 1;
-        }
-        else if (type == MAP)
-        {
-            this->width = 1;
-            this->height = 1;
-            this->maxStackSize = 1;
-            this->minStackSize = 1;
-            this->maxSockets = 0;
-            this->sockets = 0;
-        }
-        else if (type == GEM)
-        {
-            this->width = 1;
-            this->height = 1;
-            this->maxStackSize = 1;
-            this->minStackSize = 1;
-            this->maxSockets = 0;
-            this->sockets = 0;
-        }
+        this->maxStackSize = maxStackSize;
+        this->minStackSize = minStackSize;
+        this->maxSockets = maxSockets;
+        this->sockets = sockets;
+        // REDUNDANT SI GRESIT!!!
+        //if (type == EQUIPMENT)
+        //{
+        //    this->maxSockets = std::min<unsigned int>({width * height, 6u});
+        //    this->minStackSize = 1;
+        //    this->maxStackSize = 1;
+        //}
+        //else if (type == CURRENCY)
+        //{
+        //    this->width = 1;
+        //    this->height = 1;
+        //}
+        //else if (type == MAP)
+        //{
+        //    this->width = 1;
+        //    this->height = 1;
+        //    this->maxStackSize = 1;
+        //    this->minStackSize = 1;
+        //    this->maxSockets = 0;
+        //    this->sockets = 0;
+        //}
+        //else if (type == GEM)
+        //{
+        //    this->width = 1;
+        //    this->height = 1;
+        //    this->maxStackSize = 1;
+        //    this->minStackSize = 1;
+        //    this->maxSockets = 0;
+        //    this->sockets = 0;
+        //}
+        //else if (type == SPECIAL)
+        //{
+        //    this->maxStackSize = 1;
+        //    this->minStackSize = 1;
+        //    this->maxSockets = 0;
+        //    this->sockets = 0;
+        //}
+        //else // eroare, tipul de item introdus gresit
+        //{
+        //    throw std::invalid_argument("Invalid item type");
+        //}
         switch (rarity)
         {
             case NORMAL:
@@ -323,7 +341,14 @@ public:
         return height;
     }
 
-
+    void print_unique_id() const
+    {
+        std::cout << "Unique ID: " << unique_id << std::endl;
+    }
+    [[nodiscard]] unsigned int get_unique_id() const
+    {
+        return unique_id;
+    }
     friend bool operator==(const Item& lhs, const Item& rhs)
     {
         return lhs.name == rhs.name
@@ -356,9 +381,9 @@ public:
         return lhs.unique_id < rhs.unique_id;
     }
 
-    friend bool operator<=(const Item& lhs, const Item& rhs)
+    friend auto operator<=(const Item& lhs, const Item& rhs) -> bool
     {
-        return !(rhs < lhs);
+        return rhs >= lhs;
     }
 
     friend bool operator>(const Item& lhs, const Item& rhs)
@@ -382,15 +407,17 @@ unsigned int Item::item_count = 0;
 
 class Inventory // 6x10
 {
-    std::array<std::array<Item, 10>, 6> inventory{}; // 6x10
-    std::map<Item,std::pair<unsigned int, unsigned int>> item_positions{}; // mapez fiecare item la coltul stanga sus de unde a fost gasit un loc valid
+    std::array<std::array<std::unique_ptr<Item>, 10>, 6> inventory{}; // 6x10
+    std::map<Item, std::pair<unsigned int, unsigned int>> item_positions{};
+    // mapez fiecare item la coltul stanga sus de unde a fost gasit un loc valid
     static bool inside(unsigned int x, unsigned int y)
     {
         if (x < 6 && y < 10)
             return true;
         return false;
     }
-    bool check_if_item_fits(const Item& item, const unsigned int row, const unsigned int column) const
+
+    [[nodiscard]] bool check_if_item_fits(const Item& item, const unsigned int row, const unsigned int column) const
     {
         unsigned int item_width = item.get_width();
         unsigned int item_height = item.get_height();
@@ -398,17 +425,18 @@ class Inventory // 6x10
         {
             for (unsigned int j = column; j < column + item_width; j++)
             {
-                if (!inside(i, j) || inventory[i][j].get_name() != "genericItem")
+                if (!inside(i, j) || inventory[i][j] == nullptr || inventory[i][j]->get_name() != "genericItem")
                     return false;
             }
         }
         return true;
     }
+
     void set_item_in_inventory_slot(const Item& item, const unsigned int row, const unsigned int column)
     {
-        inventory[row][column] = item;
-        //this->inventory = inventory; trebuie asa ceva oare?
+        inventory[row][column] = std::make_unique<Item>(item);
     }
+
 public:
     // place item
     Inventory()
@@ -417,18 +445,20 @@ public:
         {
             for (unsigned int j = 0; j < 10; j++)
             {
-                inventory[i][j] = Item("genericItem", "This is a generic item", EQUIPMENT, NORMAL, 0, 100, 1, 1, 1, 1, 1, 1);
+                inventory[i][j] = std::make_unique<Item>("genericItem", "This is a generic item", EQUIPMENT, NORMAL, 0,
+                                                         100, 1, 1, 1, 1, 1, 1);
             }
         }
     }
+
     // arata ca naiba
     void place_item(const Item& item)
     {
         unsigned int item_width = item.get_width();
         unsigned int item_height = item.get_height();
-        for (unsigned int i = 0; i < 6; i++)
+        for (unsigned int j = 0; j < 10; j++)
         {
-            for (unsigned int j = 0; j < 10; j++)
+            for (unsigned int i = 0; i < 6; i++)
             {
                 if (check_if_item_fits(item, i, j) == 1)
                 {
@@ -442,17 +472,12 @@ public:
                         }
                     }
                     return;
-
                 }
             }
         }
         // daca a ajuns aici inseamna ca nu a putut pune itemul in inventar. Notificam user-ul
-        std::cout << item.get_name() + " nu a putut fi pus(a) in inventar" << std::endl; // aici templar face "I am no beast of burden" =)))))))
-    }
-
-    [[nodiscard]] std::array<std::array<Item, 10>, 6> get_inventory() const
-    {
-        return inventory;
+        std::cout << item.get_name() + " nu a putut fi pus(a) in inventar" << std::endl;
+        // aici templar face "I am no beast of burden" =)))))))
     }
 
     void print_inventory() const
@@ -460,7 +485,12 @@ public:
         for (unsigned int row = 0; row < 6; row++)
         {
             for (unsigned int column = 0; column < 10; column++)
-                std::cout << inventory[row][column].get_name()<< " ";
+            {
+                if (inventory[row][column] != nullptr)
+                    std::cout << inventory[row][column]->get_name() << " ";
+                else
+                    std::cout << "empty ";
+            }
             std::cout << std::endl;
         }
     }
@@ -484,8 +514,10 @@ int main() {
     sabiuta.print_size();
     Chaos_Orb.print_size();
     inventory.place_item(Chaos_Orb);
+    //Chaos_Orb.print_unique_id();
+    //sabiuta.print_unique_id();
     inventory.place_item(sabiuta);
-    inventory.place_item(Chaos_Orb);
+    inventory.place_item(Chaos_Orb); // ar trebui sa fie stackable
     inventory.print_inventory();
 
     std::cout << "Programul a terminat execuția\n";
