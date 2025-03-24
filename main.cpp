@@ -97,7 +97,13 @@ public:
     {
         return !(lhs == rhs);
     }
-
+    friend std::ostream& operator<<(std::ostream& os, const Mod& mod)
+    {
+        os << "Short Name: " << mod.shortName << std::endl;
+        os << "Long Name: " << mod.longName << std::endl;
+        os << "Tier: " << mod.tier << std::endl;
+        return os;
+    }
     [[nodiscard]] const std::string& getShortName() const { return shortName; }
     [[nodiscard]] const std::string& getLongName()  const { return longName; }
     [[nodiscard]] unsigned int getTier()     const { return tier; }
@@ -254,7 +260,29 @@ public:
     // [[maybe_unused]]void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
     // [[maybe_unused]]void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }
     // [[maybe_unused]]void print_unique_id() const { std::cout << "Unique ID: " << unique_id << std::endl; }
-
+    friend std::ostream& operator<<(std::ostream& os, const Item& item)
+    {
+        os << "Name: " << item.name << std::endl;
+        os << "Description: " << item.description << std::endl;
+        os << "Type: " << item.type << std::endl;
+        os << "Item Level: " << item.itemLevel << std::endl;
+        os << "Quality: " << item.quality << std::endl;
+        os << "Max Stack Size: " << item.maxStackSize << std::endl;
+        os << "Max Prefixes: " << item.maxPrefixes << std::endl;
+        os << "Max Suffixes: " << item.maxSuffixes << std::endl;
+        os << "Max Sockets: " << item.maxSockets << std::endl;
+        os << "Sockets: " << item.sockets << std::endl;
+        os << "Width: " << item.width << std::endl;
+        os << "Height: " << item.height << std::endl;
+        os << "Current Stack Size: " << item.currentStackSize << std::endl;
+        os << "Rarity: " << item.rarity << std::endl;
+        os << "Affixes: " << std::endl;
+        for (const auto& mod : item.affixes)
+        {
+            os << mod << std::endl;
+        }
+        return os;
+    }
     friend bool operator==(const Item& lhs, const Item& rhs)
     {
         return lhs.name == rhs.name &&
@@ -413,6 +441,22 @@ public:
             std::cout << std::endl;
         }
     }
+    friend std::ostream& operator<<(std::ostream& os, const Inventory& inventory)
+    {
+        for (unsigned int row = 0; row < 6; row++)
+        {
+            for (unsigned int column = 0; column < 10; column++)
+            {
+                if (inventory.inventory[row][column] != nullptr)
+                    os << inventory.inventory[row][column]->get_name() << " x"
+                        << inventory.inventory[row][column]->get_current_stack_size() << "   ";
+                else
+                    os << "empty   ";
+            }
+            os << std::endl;
+        }
+        return os;
+    }
 };
 
 //-----------------------------------------------------------------
@@ -544,7 +588,8 @@ int main() {
     CraftingBench::addModToWeapon(sword, Mod("IncPhyDmg", "Increased Physical Damage", 1));
     // Stergem un mod de pe o arma
     bench.removeModFromWeapon(sword, Mod("IncPhyDmg", "Increased Physical Damage", 1));
-
+    std::cout << inventory << std::endl;
+    std::cout << sword << std::endl;
     std::cout << "\nProgram execution finished.\n";
     return 0;
 }
