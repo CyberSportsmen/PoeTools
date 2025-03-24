@@ -232,7 +232,7 @@ public:
     Item& operator=(const Item& other) = default;
     Item& operator=(Item&& other) noexcept = default;
 
-    [[nodiscard]] std::string get_name() const
+    [[nodiscard]] const std::string& get_name() const
     {
         return name;
     }
@@ -242,7 +242,7 @@ public:
         this->name = name;
     }
 
-    [[nodiscard]] std::string get_description() const
+    [[nodiscard]] const std::string get_description() const
     {
         return description;
     }
@@ -302,7 +302,7 @@ public:
         this->quality = quality;
     }
 
-    [[nodiscard]] std::vector<Mod> get_affixes() const
+    [[nodiscard]] const std::vector<Mod> get_affixes() const
     {
         return affixes;
     }
@@ -312,7 +312,7 @@ public:
         this->affixes = affixes;
     }
 
-    [[nodiscard]] std::vector<Mod> get_implicit() const
+    [[nodiscard]]const std::vector<Mod> get_implicit() const
     {
         return implicit;
     }
