@@ -77,9 +77,7 @@ const std::map<equipmentTypes, std::string> equipmentTypesToString = {
 class Mod
 {
     std::string shortName{"GenericShortModName"};
-    std::string longName{"GenericLongModName"}; // în joc, când apeși Alt, ți se dezvăluie mod-ul și ți se spune ce tier este, plus o descriere mai lungă, cu range-urile valorilor
-    // TO BE IMPLEMENTED, ALONG WITH TIERS AND A LIST OF MODS FOR MODPOOL!! (depends on iLvl)
-    // unsigned int nrOfNumericValues{0};
+    std::string longName{"GenericLongModName"};
     unsigned int tier{1};
 public:
     Mod(std::string short_name, std::string long_name, const unsigned int tier)
@@ -90,25 +88,55 @@ public:
     }
     Mod() = default;
 
+    // Comparison operators (based on all data members)
     friend bool operator==(const Mod& lhs, const Mod& rhs)
     {
         return lhs.shortName == rhs.shortName
             && lhs.longName == rhs.longName
             && lhs.tier == rhs.tier;
     }
-
     friend bool operator!=(const Mod& lhs, const Mod& rhs)
     {
         return !(lhs == rhs);
     }
+
+    // Getters for accessing mod information.
+    std::string getShortName() const { return shortName; }
+    std::string getLongName()  const { return longName; }
+    unsigned int getTier()     const { return tier; }
 };
 
+// Represents a collection of mods (a mod pool) divided into different categories.
 class ModPool
 {
     std::vector<Mod> prefixes;
     std::vector<Mod> suffixes;
-    std::vector<Mod> affixes; // prefixe și sufixe însumate
-    std::map<unsigned int, Mod> Weights; // fiecare mod are un weight pentru a fi ales
+    std::vector<Mod> affixes; // A combined list (prefix + suffix)
+    std::map<unsigned int, Mod> weights; // Each mod can have a weight for selection purposes.
+public:
+    // Methods to add mods into their respective containers.
+    void addPrefix(const Mod& mod)
+    {
+        prefixes.push_back(mod);
+    }
+    void addSuffix(const Mod& mod)
+    {
+        suffixes.push_back(mod);
+    }
+    void addAffix(const Mod& mod)
+    {
+        affixes.push_back(mod);
+    }
+    void addWeightedMod(unsigned int weight, const Mod& mod)
+    {
+        weights[weight] = mod;
+    }
+
+    // Getters for the mod collections.
+    const std::vector<Mod>& getPrefixes() const { return prefixes; }
+    const std::vector<Mod>& getSuffixes() const { return suffixes; }
+    const std::vector<Mod>& getAffixes()  const { return affixes; }
+    const std::map<unsigned int, Mod>& getWeights() const { return weights; }
 };
 
 class Item
@@ -242,7 +270,7 @@ public:
         this->name = name;
     }
 
-    [[nodiscard]] const std::string get_description() const
+    [[nodiscard]] std::string get_description() const
     {
         return description;
     }
@@ -529,6 +557,45 @@ int main() {
     inventory.place_item(sabiuta);
     inventory.place_item(Chaos_Orb); // ar trebui sa fie stackable
     inventory.print_inventory();
+
+    ModPool modPool;
+
+    modPool.addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    modPool.addPrefix(Mod("AddFirDmg", "Adds Fire Damage", 2));
+    modPool.addPrefix(Mod("IncAtkSpd", "Increased Attack Speed", 2));
+
+    modPool.addSuffix(Mod("IncLife", "Increased Life", 1));
+    modPool.addSuffix(Mod("IncEva", "Increased Evasion Rating", 1));
+    modPool.addSuffix(Mod("IncCrit", "Increased Critical Strike Chance", 3));
+
+    modPool.addAffix(Mod("PhysCrit", "Increased Physical Damage and Critical Strike Chance", 3));
+
+    modPool.addWeightedMod(10, Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    modPool.addWeightedMod(15, Mod("IncLife", "Increased Life", 1));
+    modPool.addWeightedMod(20, Mod("IncCrit", "Increased Critical Strike Chance", 3));
+
+    std::cout << "Prefix Mods:" << std::endl;
+    for (const auto& mod : modPool.getPrefixes())
+    {
+        std::cout << " - " << mod.getShortName() << ": " << mod.getLongName()
+                  << " (Tier " << mod.getTier() << ")" << std::endl;
+    }
+
+    std::cout << "\nSuffix Mods:" << std::endl;
+    for (const auto& mod : modPool.getSuffixes())
+    {
+        std::cout << " - " << mod.getShortName() << ": " << mod.getLongName()
+                  << " (Tier " << mod.getTier() << ")" << std::endl;
+    }
+
+    std::cout << "\nWeighted Mods:" << std::endl;
+    for (const auto& entry : modPool.getWeights())
+    {
+        const auto& mod = entry.second;
+        std::cout << "Weight " << entry.first << " -> " << mod.getShortName() << ": "
+                  << mod.getLongName() << " (Tier " << mod.getTier() << ")" << std::endl;
+    }
+
 
     std::cout << "Programul a terminat execuția\n";
     return 0;

@@ -17,7 +17,7 @@ ResourceManager::ResourceManager()
     loadTexture("images", "default.png");
     loadTexture("images", "genericItem.png");
     loadTexture("images", "Chaos Orb.png");
-    //loadFont("fonts", "FiraSans-Regular.ttf");
+    loadFont("fonts", "FiraSans-Regular.ttf");
 }
 
 void ResourceManager::loadTexture(const std::string& path, const std::string& texture_name)
