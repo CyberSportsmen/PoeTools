@@ -98,8 +98,8 @@ public:
         return !(lhs == rhs);
     }
 
-    [[nodiscard]] std::string getShortName() const { return shortName; }
-    [[nodiscard]] std::string getLongName()  const { return longName; }
+    [[nodiscard]] const std::string getShortName() const { return shortName; }
+    [[nodiscard]] const std::string getLongName()  const { return longName; }
     [[nodiscard]] unsigned int getTier()     const { return tier; }
 };
 
@@ -225,9 +225,9 @@ public:
     Item& operator=(Item&& other) noexcept = default;
 
     const std::string& get_name() const { return name; }
-    void set_name(const std::string& name) { this->name = name; }
+    void set_name(const std::string& newName) { name = newName; }
     std::string get_description() const { return description; }
-    void set_description(const std::string& description) { this->description = description; }
+    void set_description(const std::string& newDescription) { this->description = newDescription; }
     itemTypes get_type() const { return type; }
     void set_type(itemTypes type) { this->type = type; }
     unsigned int get_item_level() const { return itemLevel; }
@@ -438,13 +438,11 @@ public:
         return benchPool.removeAffix(mod);
     }
 
-    // Add a mod from the bench pool to a weapon's affixes.
-    // (For simplicity, we simply push the mod if capacity allows.)
+    // Adauga un mod, daca are loc
     static bool addModToWeapon(Item& weapon, const Mod& mod)
     {
         std::vector<Mod> mods = weapon.get_affixes();
-        // In a complete implementation, you would check if the mod is a prefix/suffix
-        // and ensure that the weapon does not exceed its allowed maximum.
+        // TODO: DE VERIFICAT CU MAXIM SI MINIM, NU ARE VOIE SA TREACA DE LIMITA
         unsigned int allowed = weapon.get_maxPrefixes() + weapon.get_maxSuffixes();
         if (mods.size() < allowed)
         {
@@ -457,7 +455,6 @@ public:
         return false;
     }
 
-    // Remove a mod from a weapon and (optionally) return it to the bench pool.
     bool removeModFromWeapon(Item& weapon, const Mod& mod)
     {
         std::vector<Mod> mods = weapon.get_affixes();
@@ -467,7 +464,7 @@ public:
             mods.erase(it);
             weapon.set_affixes(mods);
             std::cout << "Removed mod " << mod.getShortName() << " from weapon " << weapon.get_name() << std::endl;
-            // Optionally add it back to the bench pool:
+            // adauga inapoi in benchPool (optional)
             benchPool.addAffix(mod);
             return true;
         }
@@ -475,7 +472,6 @@ public:
         return false;
     }
 
-    // For demonstration: list mods available on the bench.
     void listBenchMods() const
     {
         std::cout << "Bench Affix Mods:" << std::endl;
