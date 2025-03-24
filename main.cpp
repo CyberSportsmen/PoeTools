@@ -1,7 +1,7 @@
 #include <iostream>
 #include <array>
 #include <chrono>
-#include <thread>
+// #include <thread>
 #include <map>
 #include <vector>
 #include <string>
@@ -120,10 +120,12 @@ class Item
     unsigned int unique_id{};
     unsigned int width{2};
     unsigned int height{2};
-    unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
+    // GUNOI
+    //unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
     unsigned int maxStackSize{1};
     unsigned int minStackSize{1};
-    unsigned int currentStackSize{1};
+    // TO BE IMPLEMENTED
+    unsigned int currentStackSize{1}; // trebuie utilizat in inventory management system
     unsigned int maxSockets{4};
     unsigned int sockets{1};
     unsigned int itemLevel{100}; // default maxim, de obicei 85-86 e maximul necesar pentru orice mod T1
@@ -315,6 +317,15 @@ public:
         return implicit;
     }
 
+    [[nodiscard]] unsigned int get_current_stack_size() const
+    {
+        return currentStackSize;
+    }
+    void set_current_stack_size(unsigned int current_stack_size)
+    {
+        this->currentStackSize = current_stack_size;
+    }
+
     void set_implicit(const std::vector<Mod>& implicit)
     {
         this->implicit = implicit;
@@ -380,7 +391,6 @@ public:
     {
         return lhs.unique_id < rhs.unique_id;
     }
-
     friend auto operator<=(const Item& lhs, const Item& rhs) -> bool
     {
         return rhs >= lhs;
@@ -487,7 +497,7 @@ public:
             for (unsigned int column = 0; column < 10; column++)
             {
                 if (inventory[row][column] != nullptr)
-                    std::cout << inventory[row][column]->get_name() << " ";
+                    std::cout << inventory[row][column]->get_name() << " x" << inventory[row][column]->get_current_stack_size();
                 else
                     std::cout << "empty ";
             }
@@ -506,7 +516,7 @@ int main() {
     // itemLevel și alte atribute pot fi ajustate conform nevoilor tale
 
     Item sabiuta("Sword", "Sabie Smechera",EQUIPMENT,MAGIC,20,83,2,3,1,1,3,1);
-    Item Chaos_Orb("Chaos Orb", "Reforces a rare item with new random proprieties", CURRENCY, NO_RARITY, NULL, NULL, 1, 1, 20, 1, 0, 0);
+    Item Chaos_Orb("Chaos Orb", "Reforces a rare item with new random proprieties", CURRENCY, NO_RARITY, 0, 0, 1, 1, 20, 1, 0, 0);
     // item.print_quality();
     // item.set_quality(28);
     // item.print_quality();
