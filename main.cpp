@@ -1,23 +1,22 @@
 #include <iostream>
 #include <array>
 #include <chrono>
-// #include <thread>
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
+#include <algorithm>
 #include <SFML/Graphics.hpp>
 #include <utility>
-
-//#include <Helper.h>
-#include "ResourceManager.hpp"
+#include "ResourceManager.hpp"  // Assumes a singleton resource manager for textures
 
 enum itemTypes
 {
     EQUIPMENT,
     CURRENCY,
     MAP,
-    GEM, //socketable
-    SPECIAL, // quest items, sunt cu text verde
+    GEM,      // socketable
+    SPECIAL,  // quest items, shown in green text
 };
 
 const std::map<itemTypes, std::string> itemTypesToString = {
@@ -31,10 +30,10 @@ const std::map<itemTypes, std::string> itemTypesToString = {
 enum itemRarities
 {
     NORMAL,
-    MAGIC, // blue
+    MAGIC,       // blue
     RARE,
     UNIQUE,
-    UNIQUE_FOIL, // la fel ca unique doar ca e shiny
+    UNIQUE_FOIL, // shiny unique
     NO_RARITY,
 };
 
@@ -88,22 +87,20 @@ public:
     }
     Mod() = default;
 
-    // Comparison operators (based on all data members)
     friend bool operator==(const Mod& lhs, const Mod& rhs)
     {
-        return lhs.shortName == rhs.shortName
-            && lhs.longName == rhs.longName
-            && lhs.tier == rhs.tier;
+        return lhs.shortName == rhs.shortName &&
+               lhs.longName  == rhs.longName &&
+               lhs.tier      == rhs.tier;
     }
     friend bool operator!=(const Mod& lhs, const Mod& rhs)
     {
         return !(lhs == rhs);
     }
 
-    // Getters for accessing mod information.
-    std::string getShortName() const { return shortName; }
-    std::string getLongName()  const { return longName; }
-    unsigned int getTier()     const { return tier; }
+    [[nodiscard]] std::string getShortName() const { return shortName; }
+    [[nodiscard]] std::string getLongName()  const { return longName; }
+    [[nodiscard]] unsigned int getTier()     const { return tier; }
 };
 
 // Represents a collection of mods (a mod pool) divided into different categories.
@@ -111,32 +108,47 @@ class ModPool
 {
     std::vector<Mod> prefixes;
     std::vector<Mod> suffixes;
-    std::vector<Mod> affixes; // A combined list (prefix + suffix)
-    std::map<unsigned int, Mod> weights; // Each mod can have a weight for selection purposes.
+    std::vector<Mod> affixes; // suffix + prefix
+    std::map<unsigned int, Mod> weights; // Each mod has a weight for selection
 public:
-    // Methods to add mods into their respective containers.
-    void addPrefix(const Mod& mod)
-    {
-        prefixes.push_back(mod);
+    // addauga mod-uri
+    void addPrefix(const Mod& mod) { prefixes.push_back(mod); }
+    void addSuffix(const Mod& mod) { suffixes.push_back(mod); }
+    void addAffix(const Mod& mod)  { affixes.push_back(mod); }
+    void addWeightedMod(unsigned int weight, const Mod& mod) { weights[weight] = mod; }
+
+    // sterge un prefix
+    bool removePrefix(const Mod& mod) {
+        auto it = std::ranges::find(prefixes, mod);
+        if(it != prefixes.end()){
+            prefixes.erase(it);
+            return true;
+        }
+        return false;
     }
-    void addSuffix(const Mod& mod)
-    {
-        suffixes.push_back(mod);
+    // sterge un sufix
+    bool removeSuffix(const Mod& mod) {
+        auto it = std::ranges::find(suffixes, mod);
+        if(it != suffixes.end()){
+            suffixes.erase(it);
+            return true;
+        }
+        return false;
     }
-    void addAffix(const Mod& mod)
-    {
-        affixes.push_back(mod);
-    }
-    void addWeightedMod(unsigned int weight, const Mod& mod)
-    {
-        weights[weight] = mod;
+    // sterge afix
+    bool removeAffix(const Mod& mod) {
+        auto it = std::ranges::find(affixes, mod);
+        if(it != affixes.end()){
+            affixes.erase(it);
+            return true;
+        }
+        return false;
     }
 
-    // Getters for the mod collections.
-    const std::vector<Mod>& getPrefixes() const { return prefixes; }
-    const std::vector<Mod>& getSuffixes() const { return suffixes; }
-    const std::vector<Mod>& getAffixes()  const { return affixes; }
-    const std::map<unsigned int, Mod>& getWeights() const { return weights; }
+    [[nodiscard]] const std::vector<Mod>& getPrefixes() const { return prefixes; }
+    [[nodiscard]] const std::vector<Mod>& getSuffixes() const { return suffixes; }
+    [[nodiscard]] const std::vector<Mod>& getAffixes()  const { return affixes; }
+    [[nodiscard]] const std::map<unsigned int, Mod>& getWeights() const { return weights; }
 };
 
 class Item
@@ -144,40 +156,34 @@ class Item
     static unsigned int item_count;
     std::string name{"genericItem"};
     std::string description{"This item has no description"};
-    itemTypes type{EQUIPMENT}; // daca nu specificam, va fi un equipment generic, alb, fara mod-uri, de dimensiuni 2x2
+    itemTypes type{EQUIPMENT}; // default is generic equipment (2x2, no mods)
     unsigned int unique_id{};
     unsigned int width{2};
     unsigned int height{2};
-    // GUNOI
-    //unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
     unsigned int maxStackSize{1};
     unsigned int minStackSize{1};
-    // TO BE IMPLEMENTED
-    unsigned int currentStackSize{1}; // trebuie utilizat in inventory management system
+    unsigned int currentStackSize{1}; // for inventory management
     unsigned int maxSockets{4};
     unsigned int sockets{1};
-    unsigned int itemLevel{100}; // default maxim, de obicei 85-86 e maximul necesar pentru orice mod T1
-    // în funcție de tip, vom seta niște flag-uri pentru a indica cu ce poate interacționa item-ul, unde poate fi pus etc.
-    // nu vom crea un caracter, vom face doar inventar, deoarece acest tool tot ce face este să emuleze crafting-ul fără să folosească
-    // banii (currency-ul) câștigați în joc, pentru a fi folosiți eficient.
-    sf::Texture texture; // imaginea item-ului
-    // raritatea afectează numărul maxim de afixe ce pot fi aplicate (excludem pentru moment implicitele care schimbă acest lucru)
+    unsigned int itemLevel{100}; // default maximum (de obicei 85-86 e maximul pentru orice T1)
+    sf::Texture texture; // item image
     itemRarities rarity{NORMAL};
     unsigned int maxPrefixes{0};
     unsigned int maxSuffixes{0};
     unsigned int quality{0};
-    std::vector<Mod> affixes{}; // empty by default
-    std::vector<Mod> implicit{}; // empty by default
+    std::vector<Mod> affixes{}; // mods applied to the item
+    std::vector<Mod> implicit{}; // implicit mods
 public:
     Item()
     {
         unique_id = ++item_count;
     }
-    Item(const std::string& name, const std::string& description, const itemTypes type, const itemRarities rarity, const unsigned int quality, const unsigned int itemLevel, const unsigned int width, const unsigned int height, const unsigned int maxStackSize, const unsigned int minStackSize, const unsigned int maxSockets, const unsigned int sockets)
+    Item(const std::string& name, const std::string& description, itemTypes type, itemRarities rarity,
+         unsigned int quality, unsigned int itemLevel, unsigned int width, unsigned int height,
+         unsigned int maxStackSize, unsigned int minStackSize, unsigned int maxSockets, unsigned int sockets)
     {
         unique_id = ++item_count;
         this->name = name;
-        // pentru texturi, numele texturii va fi chiar numele item-ului, deci un item cu același nume va avea mereu aceeași imagine
         this->texture = ResourceManager::Instance().getTexture(name + ".png");
         this->quality = quality;
         this->itemLevel = itemLevel;
@@ -189,47 +195,6 @@ public:
         this->minStackSize = minStackSize;
         this->maxSockets = maxSockets;
         this->sockets = sockets;
-        // REDUNDANT SI GRESIT!!!
-        //if (type == EQUIPMENT)
-        //{
-        //    this->maxSockets = std::min<unsigned int>({width * height, 6u});
-        //    this->minStackSize = 1;
-        //    this->maxStackSize = 1;
-        //}
-        //else if (type == CURRENCY)
-        //{
-        //    this->width = 1;
-        //    this->height = 1;
-        //}
-        //else if (type == MAP)
-        //{
-        //    this->width = 1;
-        //    this->height = 1;
-        //    this->maxStackSize = 1;
-        //    this->minStackSize = 1;
-        //    this->maxSockets = 0;
-        //    this->sockets = 0;
-        //}
-        //else if (type == GEM)
-        //{
-        //    this->width = 1;
-        //    this->height = 1;
-        //    this->maxStackSize = 1;
-        //    this->minStackSize = 1;
-        //    this->maxSockets = 0;
-        //    this->sockets = 0;
-        //}
-        //else if (type == SPECIAL)
-        //{
-        //    this->maxStackSize = 1;
-        //    this->minStackSize = 1;
-        //    this->maxSockets = 0;
-        //    this->sockets = 0;
-        //}
-        //else // eroare, tipul de item introdus gresit
-        //{
-        //    throw std::invalid_argument("Invalid item type");
-        //}
         switch (rarity)
         {
             case NORMAL:
@@ -254,208 +219,93 @@ public:
                 break;
         }
     }
-    // nu schimbam id-ul unic, il copiem pentru ca ar trebui sa devina unul si acelasi daca le egalam.
     Item(const Item& other) = default;
     Item(Item&& other) noexcept = default;
     Item& operator=(const Item& other) = default;
     Item& operator=(Item&& other) noexcept = default;
 
-    [[nodiscard]] const std::string& get_name() const
-    {
-        return name;
-    }
+    const std::string& get_name() const { return name; }
+    void set_name(const std::string& name) { this->name = name; }
+    std::string get_description() const { return description; }
+    void set_description(const std::string& description) { this->description = description; }
+    itemTypes get_type() const { return type; }
+    void set_type(itemTypes type) { this->type = type; }
+    unsigned int get_item_level() const { return itemLevel; }
+    void set_item_level(unsigned int item_level) { itemLevel = item_level; }
+    sf::Texture get_texture() const { return texture; }
+    void set_texture(const sf::Texture& texture) { this->texture = texture; }
+    itemRarities get_rarity() const { return rarity; }
+    void set_rarity(itemRarities const rarity) { this->rarity = rarity; }
+    unsigned int get_quality() const { return quality; }
+    void set_quality(unsigned int quality) { this->quality = quality; }
+    std::vector<Mod> get_affixes() const { return affixes; }
+    void set_affixes(const std::vector<Mod>& affixes) { this->affixes = affixes; }
+    std::vector<Mod> get_implicit() const { return implicit; }
+    void set_implicit(const std::vector<Mod>& implicit) { this->implicit = implicit; }
+    unsigned int get_current_stack_size() const { return currentStackSize; }
+    void set_current_stack_size(unsigned int current_stack_size) { this->currentStackSize = current_stack_size; }
+    unsigned int get_maxStackSize() const { return maxStackSize; }
+    unsigned int get_width() const { return width; }
+    unsigned int get_height() const { return height; }
+    unsigned int get_maxPrefixes() const { return maxPrefixes; }
+    unsigned int get_maxSuffixes() const { return maxSuffixes; }
+    unsigned int get_unique_id() const { return unique_id; }
 
-    void set_name(const std::string& name)
-    {
-        this->name = name;
-    }
+    void print_quality() const { std::cout << "Quality: " << quality << std::endl; }
+    void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
+    void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }
+    void print_unique_id() const { std::cout << "Unique ID: " << unique_id << std::endl; }
 
-    [[nodiscard]] std::string get_description() const
-    {
-        return description;
-    }
-
-    void set_description(const std::string& description)
-    {
-        this->description = description;
-    }
-
-    [[nodiscard]] itemTypes get_type() const
-    {
-        return type;
-    }
-
-    void set_type(itemTypes type)
-    {
-        this->type = type;
-    }
-
-    [[nodiscard]] unsigned int get_item_level() const
-    {
-        return itemLevel;
-    }
-
-    void set_item_level(unsigned int item_level)
-    {
-        itemLevel = item_level;
-    }
-
-    [[nodiscard]] sf::Texture get_texture() const
-    {
-        return texture;
-    }
-
-    void set_texture(const sf::Texture& texture)
-    {
-        this->texture = texture;
-    }
-
-    [[nodiscard]] itemRarities get_rarity() const
-    {
-        return rarity;
-    }
-
-    void set_rarity(itemRarities const rarity)
-    {
-        this->rarity = rarity;
-    }
-
-    [[nodiscard]] unsigned int get_quality() const
-    {
-        return quality;
-    }
-
-    void set_quality(unsigned int quality)
-    {
-        this->quality = quality;
-    }
-
-    [[nodiscard]] const std::vector<Mod> get_affixes() const
-    {
-        return affixes;
-    }
-
-    void set_affixes(const std::vector<Mod>& affixes)
-    {
-        this->affixes = affixes;
-    }
-
-    [[nodiscard]]const std::vector<Mod> get_implicit() const
-    {
-        return implicit;
-    }
-
-    [[nodiscard]] unsigned int get_current_stack_size() const
-    {
-        return currentStackSize;
-    }
-    void set_current_stack_size(unsigned int current_stack_size)
-    {
-        this->currentStackSize = current_stack_size;
-    }
-
-    void set_implicit(const std::vector<Mod>& implicit)
-    {
-        this->implicit = implicit;
-    }
-    void print_quality() const
-    {
-        std::cout << "Quality: " << quality << std::endl;
-    }
-    void print_item_level() const
-    {
-        std::cout << "Item Level: " << itemLevel << std::endl;
-    }
-    void print_size() const
-    {
-        std::cout << "Width: " << width << " Height: " << height << std::endl;
-    }
-    [[nodiscard]] unsigned int get_width() const
-    {
-        return width;
-    }
-
-    [[nodiscard]] unsigned int get_height() const
-    {
-        return height;
-    }
-
-    void print_unique_id() const
-    {
-        std::cout << "Unique ID: " << unique_id << std::endl;
-    }
-    [[nodiscard]] unsigned int get_unique_id() const
-    {
-        return unique_id;
-    }
     friend bool operator==(const Item& lhs, const Item& rhs)
     {
-        return lhs.name == rhs.name
-            && lhs.description == rhs.description
-            && lhs.type == rhs.type
-            && lhs.width == rhs.width
-            && lhs.height == rhs.height
-            // && lhs.value == rhs.value
-            && lhs.maxStackSize == rhs.maxStackSize
-            && lhs.minStackSize == rhs.minStackSize
-            && lhs.maxSockets == rhs.maxSockets
-            && lhs.sockets == rhs.sockets
-            && lhs.itemLevel == rhs.itemLevel
-            //&& lhs.texture == rhs.texture texturile pot fi diferite, putem avea mtx-uri :)
-            && lhs.rarity == rhs.rarity
-            && lhs.maxPrefixes == rhs.maxPrefixes
-            && lhs.maxSuffixes == rhs.maxSuffixes
-            && lhs.quality == rhs.quality
-            && lhs.affixes == rhs.affixes
-            && lhs.implicit == rhs.implicit;
+        return lhs.name == rhs.name &&
+               lhs.description == rhs.description &&
+               lhs.type == rhs.type &&
+               lhs.width == rhs.width &&
+               lhs.height == rhs.height &&
+               lhs.maxStackSize == rhs.maxStackSize &&
+               lhs.minStackSize == rhs.minStackSize &&
+               lhs.maxSockets == rhs.maxSockets &&
+               lhs.sockets == rhs.sockets &&
+               lhs.itemLevel == rhs.itemLevel &&
+               lhs.rarity == rhs.rarity &&
+               lhs.maxPrefixes == rhs.maxPrefixes &&
+               lhs.maxSuffixes == rhs.maxSuffixes &&
+               lhs.quality == rhs.quality &&
+               lhs.affixes == rhs.affixes &&
+               lhs.implicit == rhs.implicit;
     }
-
     friend bool operator!=(const Item& lhs, const Item& rhs)
     {
         return !(lhs == rhs);
     }
-
     friend bool operator<(const Item& lhs, const Item& rhs)
     {
         return lhs.unique_id < rhs.unique_id;
     }
-    friend auto operator<=(const Item& lhs, const Item& rhs) -> bool
-    {
-        return rhs >= lhs;
-    }
-
-    friend bool operator>(const Item& lhs, const Item& rhs)
-    {
-        return rhs < lhs;
-    }
-
-    friend bool operator>=(const Item& lhs, const Item& rhs)
-    {
-        return !(lhs < rhs);
-    }
-
-    friend std::size_t hash_value(const Item& obj)
-    {
-        std::size_t seed = 0x5D5782BC;
-        seed ^= (seed << 6) + (seed >> 2) + 0x5A1DF970 + static_cast<std::size_t>(obj.unique_id);
-        return seed;
-    }
 };
+
 unsigned int Item::item_count = 0;
 
-class Inventory // 6x10
+//-----------------------------------------------------------------
+// Inventory Class (6x10 grid)
+//-----------------------------------------------------------------
+class Inventory
 {
-    std::array<std::array<std::unique_ptr<Item>, 10>, 6> inventory{}; // 6x10
-    std::map<Item, std::pair<unsigned int, unsigned int>> item_positions{};
-    // mapez fiecare item la coltul stanga sus de unde a fost gasit un loc valid
+    // For simplicity, an "empty" slot holds a default generic item.
+    std::array<std::array<std::unique_ptr<Item>, 10>, 6> inventory{};
+    // Map storing the top‐left position of a placed item.
+    // (Here we use the item’s unique ID as key for clarity.)
+    std::map<unsigned int, std::pair<unsigned int, unsigned int>> item_positions;
+
+    // Check if a coordinate is within bounds.
     static bool inside(unsigned int x, unsigned int y)
     {
-        if (x < 6 && y < 10)
-            return true;
-        return false;
+        return (x < 6 && y < 10);
     }
 
-    [[nodiscard]] bool check_if_item_fits(const Item& item, const unsigned int row, const unsigned int column) const
+    // Check if an item fits starting at (row, column).
+    [[nodiscard]] bool check_if_item_fits(const Item& item, unsigned int row, unsigned int column) const
     {
         unsigned int item_width = item.get_width();
         unsigned int item_height = item.get_height();
@@ -463,45 +313,78 @@ class Inventory // 6x10
         {
             for (unsigned int j = column; j < column + item_width; j++)
             {
-                if (!inside(i, j) || inventory[i][j] == nullptr || inventory[i][j]->get_name() != "genericItem")
+                if (!inside(i, j) ||
+                    inventory[i][j] == nullptr ||
+                    inventory[i][j]->get_name() != "genericItem")
                     return false;
             }
         }
         return true;
     }
 
-    void set_item_in_inventory_slot(const Item& item, const unsigned int row, const unsigned int column)
+    // Place item into each cell of its area.
+    void set_item_in_inventory_slot(const Item& item, unsigned int row, unsigned int column)
     {
         inventory[row][column] = std::make_unique<Item>(item);
     }
 
-public:
-    // place item
-    Inventory()
+    // Try to find an existing stack of the same (stackable) item.
+    // If found, increase its current stack size and return true.
+    [[nodiscard]] bool tryStackItem(const Item& item) const
     {
+        // We assume stackable items have maxStackSize > 1.
+        if (item.get_maxStackSize() <= 1)
+            return false;
+
         for (unsigned int i = 0; i < 6; i++)
         {
             for (unsigned int j = 0; j < 10; j++)
             {
-                inventory[i][j] = std::make_unique<Item>("genericItem", "This is a generic item", EQUIPMENT, NORMAL, 0,
-                                                         100, 1, 1, 1, 1, 1, 1);
+                if (inventory[i][j] != nullptr &&
+                    inventory[i][j]->get_name() == item.get_name())
+                {
+                    if (inventory[i][j]->get_current_stack_size() < inventory[i][j]->get_maxStackSize())
+                    {
+                        unsigned int current = inventory[i][j]->get_current_stack_size();
+                        inventory[i][j]->set_current_stack_size(current + 1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+public:
+    Inventory()
+    {
+        // Initialize each cell with a default "empty" generic item.
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            for (unsigned int j = 0; j < 10; j++)
+            {
+                inventory[i][j] = std::make_unique<Item>("genericItem", "This is a generic item", EQUIPMENT, NORMAL,
+                                                         0, 100, 1, 1, 1, 1, 1, 1);
             }
         }
     }
 
-    // arata ca naiba
+    // Place an item into the inventory.
+    // For stackable items, try to add to an existing stack.
     void place_item(const Item& item)
     {
+        if (tryStackItem(item))
+            return; // Stacked successfully.
+
         unsigned int item_width = item.get_width();
         unsigned int item_height = item.get_height();
         for (unsigned int j = 0; j < 10; j++)
         {
             for (unsigned int i = 0; i < 6; i++)
             {
-                if (check_if_item_fits(item, i, j) == 1)
+                if (check_if_item_fits(item, i, j))
                 {
-                    // coltul din stanga sus
-                    item_positions[item] = {i, j};
+                    // Record top-left position using the item's unique ID.
+                    item_positions[item.get_unique_id()] = {i, j};
                     for (unsigned int k = i; k < i + item_height; k++)
                     {
                         for (unsigned int l = j; l < j + item_width; l++)
@@ -513,9 +396,7 @@ public:
                 }
             }
         }
-        // daca a ajuns aici inseamna ca nu a putut pune itemul in inventar. Notificam user-ul
-        std::cout << item.get_name() + " nu a putut fi pus(a) in inventar" << std::endl;
-        // aici templar face "I am no beast of burden" =)))))))
+        std::cout << item.get_name() << " could not be placed in the inventory." << std::endl;
     }
 
     void print_inventory() const
@@ -525,41 +406,103 @@ public:
             for (unsigned int column = 0; column < 10; column++)
             {
                 if (inventory[row][column] != nullptr)
-                    std::cout << inventory[row][column]->get_name() << " x" << inventory[row][column]->get_current_stack_size();
+                    std::cout << inventory[row][column]->get_name() << " x"
+                              << inventory[row][column]->get_current_stack_size() << "   ";
                 else
-                    std::cout << "empty ";
+                    std::cout << "empty   ";
             }
             std::cout << std::endl;
         }
     }
 };
 
+//-----------------------------------------------------------------
+// CraftingBench Class
+// This class simulates a bench that can add or remove mods from a weapon's mod pool.
+//-----------------------------------------------------------------
+class CraftingBench
+{
+    ModPool benchPool;  // Internal mod pool available on the bench.
+public:
+    CraftingBench() = default;
+
+    // Add a mod to the bench's pool.
+    void addModToBenchPool(const Mod& mod)
+    {
+        benchPool.addAffix(mod);
+    }
+
+    // Remove a mod from the bench's pool.
+    bool removeModFromBenchPool(const Mod& mod)
+    {
+        return benchPool.removeAffix(mod);
+    }
+
+    // Add a mod from the bench pool to a weapon's affixes.
+    // (For simplicity, we simply push the mod if capacity allows.)
+    static bool addModToWeapon(Item& weapon, const Mod& mod)
+    {
+        std::vector<Mod> mods = weapon.get_affixes();
+        // In a complete implementation, you would check if the mod is a prefix/suffix
+        // and ensure that the weapon does not exceed its allowed maximum.
+        unsigned int allowed = weapon.get_maxPrefixes() + weapon.get_maxSuffixes();
+        if (mods.size() < allowed)
+        {
+            mods.push_back(mod);
+            weapon.set_affixes(mods);
+            std::cout << "Added mod " << mod.getShortName() << " to weapon " << weapon.get_name() << std::endl;
+            return true;
+        }
+        std::cout << "Cannot add more mods to " << weapon.get_name() << std::endl;
+        return false;
+    }
+
+    // Remove a mod from a weapon and (optionally) return it to the bench pool.
+    bool removeModFromWeapon(Item& weapon, const Mod& mod)
+    {
+        std::vector<Mod> mods = weapon.get_affixes();
+        auto it = std::ranges::find(mods, mod);
+        if (it != mods.end())
+        {
+            mods.erase(it);
+            weapon.set_affixes(mods);
+            std::cout << "Removed mod " << mod.getShortName() << " from weapon " << weapon.get_name() << std::endl;
+            // Optionally add it back to the bench pool:
+            benchPool.addAffix(mod);
+            return true;
+        }
+        std::cout << "Mod " << mod.getShortName() << " not found on weapon " << weapon.get_name() << std::endl;
+        return false;
+    }
+
+    // For demonstration: list mods available on the bench.
+    void listBenchMods() const
+    {
+        std::cout << "Bench Affix Mods:" << std::endl;
+        for (const auto& mod : benchPool.getAffixes())
+        {
+            std::cout << " - " << mod.getShortName() << ": " << mod.getLongName()
+                      << " (Tier " << mod.getTier() << ")" << std::endl;
+        }
+    }
+};
+
+//-----------------------------------------------------------------
+// main function
+//-----------------------------------------------------------------
 int main() {
-    // sf::RenderWindow window;
-    // window.create(sf::VideoMode({800, 700}), "My Window", sf::Style::Default);
-    // std::cout << "Fereastra a fost creată\n";
-    // window.setVerticalSyncEnabled(true);
+    // 2 iteme, o sabie si un chaos orb
+    Item sword("Sword", "A sharp blade", EQUIPMENT, MAGIC, 20, 83, 2, 3, 1, 1, 3, 1);
+    Item Chaos_Orb("Chaos Orb", "Reforges a rare item with new random properties", CURRENCY, NO_RARITY, 0, 0, 1, 1, 20, 1, 0, 0);
 
-    // Pentru exemplu, încărcăm o textură dummy (în practică, ar trebui să o încarci dintr-un fișier)
-    // itemLevel și alte atribute pot fi ajustate conform nevoilor tale
-
-    Item sabiuta("Sword", "Sabie Smechera",EQUIPMENT,MAGIC,20,83,2,3,1,1,3,1);
-    Item Chaos_Orb("Chaos Orb", "Reforces a rare item with new random proprieties", CURRENCY, NO_RARITY, 0, 0, 1, 1, 20, 1, 0, 0);
-    // item.print_quality();
-    // item.set_quality(28);
-    // item.print_quality();
-    Inventory inventory{};
-    sabiuta.print_size();
-    Chaos_Orb.print_size();
+    Inventory inventory;
     inventory.place_item(Chaos_Orb);
-    //Chaos_Orb.print_unique_id();
-    //sabiuta.print_unique_id();
-    inventory.place_item(sabiuta);
-    inventory.place_item(Chaos_Orb); // ar trebui sa fie stackable
+    inventory.place_item(sword);
+    inventory.place_item(Chaos_Orb); // Ar trebui sa fie stackabile
     inventory.print_inventory();
 
+    // Creez ModPool
     ModPool modPool;
-
     modPool.addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
     modPool.addPrefix(Mod("AddFirDmg", "Adds Fire Damage", 2));
     modPool.addPrefix(Mod("IncAtkSpd", "Increased Attack Speed", 2));
@@ -574,7 +517,8 @@ int main() {
     modPool.addWeightedMod(15, Mod("IncLife", "Increased Life", 1));
     modPool.addWeightedMod(20, Mod("IncCrit", "Increased Critical Strike Chance", 3));
 
-    std::cout << "Prefix Mods:" << std::endl;
+    // ModPool showcase
+    std::cout << "\nPrefix Mods:" << std::endl;
     for (const auto& mod : modPool.getPrefixes())
     {
         std::cout << " - " << mod.getShortName() << ": " << mod.getLongName()
@@ -596,7 +540,16 @@ int main() {
                   << mod.getLongName() << " (Tier " << mod.getTier() << ")" << std::endl;
     }
 
+    // Cream un craftingbench
+    CraftingBench bench;
+    bench.addModToBenchPool(Mod("ExtraCrit", "Extra Critical Strike Chance", 2));
+    bench.listBenchMods();
 
-    std::cout << "Programul a terminat execuția\n";
+    // Adaugam un mod pe o arma
+    CraftingBench::addModToWeapon(sword, Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    // Stergem un mod de pe o arma
+    bench.removeModFromWeapon(sword, Mod("IncPhyDmg", "Increased Physical Damage", 1));
+
+    std::cout << "\nProgram execution finished.\n";
     return 0;
 }
