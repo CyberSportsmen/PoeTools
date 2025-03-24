@@ -35,6 +35,7 @@ enum itemRarities
     RARE,
     UNIQUE,
     UNIQUE_FOIL, // la fel ca unique doar ca e shiny
+    NO_RARITY,
 };
 
 const std::map<itemRarities, std::string> itemRaritiesToString = {
@@ -42,7 +43,8 @@ const std::map<itemRarities, std::string> itemRaritiesToString = {
     {MAGIC, "MAGIC"},
     {RARE, "RARE"},
     {UNIQUE, "UNIQUE"},
-    {UNIQUE_FOIL, "UNIQUE_FOIL"}
+    {UNIQUE_FOIL, "UNIQUE_FOIL"},
+    {NO_RARITY, "NO_RARITY"}
 };
 
 enum equipmentTypes
@@ -110,9 +112,11 @@ class ModPool
 
 class Item
 {
+    static unsigned int item_count;
     std::string name{"genericItem"};
     std::string description{"This item has no description"};
     itemTypes type{EQUIPMENT}; // daca nu specificam, va fi un equipment generic, alb, fara mod-uri, de dimensiuni 2x2
+    unsigned int unique_id{};
     unsigned int width{2};
     unsigned int height{2};
     unsigned int value{1}; // market value in chaos orb-uri, poate fac ceva cu asta mai incolo
@@ -133,9 +137,13 @@ class Item
     std::vector<Mod> affixes{}; // empty by default
     std::vector<Mod> implicit{}; // empty by default
 public:
-    Item() = default;
+    Item()
+    {
+        unique_id = ++item_count;
+    }
     Item(const std::string& name, const std::string& description, const itemTypes type, const itemRarities rarity, const unsigned int quality, const unsigned int itemLevel, const unsigned int width, const unsigned int height, const unsigned int maxStackSize, const unsigned int minStackSize, const unsigned int maxSockets, const unsigned int sockets)
     {
+        unique_id = ++item_count;
         this->name = name;
         // pentru texturi, numele texturii va fi chiar numele item-ului, deci un item cu același nume va avea mereu aceeași imagine
         this->texture = ResourceManager::Instance().getTexture(name + ".png");
@@ -143,6 +151,8 @@ public:
         this->itemLevel = itemLevel;
         this->description = description;
         this->type = type;
+        this->width = width;
+        this->height = height;
         if (type == EQUIPMENT)
         {
             this->maxSockets = std::min<unsigned int>({width * height, 6u});
@@ -155,6 +165,15 @@ public:
             this->height = 1;
         }
         else if (type == MAP)
+        {
+            this->width = 1;
+            this->height = 1;
+            this->maxStackSize = 1;
+            this->minStackSize = 1;
+            this->maxSockets = 0;
+            this->sockets = 0;
+        }
+        else if (type == GEM)
         {
             this->width = 1;
             this->height = 1;
@@ -187,7 +206,7 @@ public:
                 break;
         }
     }
-
+    // nu schimbam id-ul unic, il copiem pentru ca ar trebui sa devina unul si acelasi daca le egalam.
     Item(const Item& other) = default;
     Item(Item&& other) noexcept = default;
     Item& operator=(const Item& other) = default;
@@ -290,7 +309,10 @@ public:
     {
         std::cout << "Item Level: " << itemLevel << std::endl;
     }
-
+    void print_size() const
+    {
+        std::cout << "Width: " << width << " Height: " << height << std::endl;
+    }
     [[nodiscard]] unsigned int get_width() const
     {
         return width;
@@ -301,6 +323,7 @@ public:
         return height;
     }
 
+
     friend bool operator==(const Item& lhs, const Item& rhs)
     {
         return lhs.name == rhs.name
@@ -308,7 +331,7 @@ public:
             && lhs.type == rhs.type
             && lhs.width == rhs.width
             && lhs.height == rhs.height
-            && lhs.value == rhs.value
+            // && lhs.value == rhs.value
             && lhs.maxStackSize == rhs.maxStackSize
             && lhs.minStackSize == rhs.minStackSize
             && lhs.maxSockets == rhs.maxSockets
@@ -327,12 +350,40 @@ public:
     {
         return !(lhs == rhs);
     }
+
+    friend bool operator<(const Item& lhs, const Item& rhs)
+    {
+        return lhs.unique_id < rhs.unique_id;
+    }
+
+    friend bool operator<=(const Item& lhs, const Item& rhs)
+    {
+        return !(rhs < lhs);
+    }
+
+    friend bool operator>(const Item& lhs, const Item& rhs)
+    {
+        return rhs < lhs;
+    }
+
+    friend bool operator>=(const Item& lhs, const Item& rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+    friend std::size_t hash_value(const Item& obj)
+    {
+        std::size_t seed = 0x5D5782BC;
+        seed ^= (seed << 6) + (seed >> 2) + 0x5A1DF970 + static_cast<std::size_t>(obj.unique_id);
+        return seed;
+    }
 };
+unsigned int Item::item_count = 0;
 
 class Inventory // 6x10
 {
     std::array<std::array<Item, 10>, 6> inventory{}; // 6x10
-
+    std::map<Item,std::pair<unsigned int, unsigned int>> item_positions{}; // mapez fiecare item la coltul stanga sus de unde a fost gasit un loc valid
     static bool inside(unsigned int x, unsigned int y)
     {
         if (x < 6 && y < 10)
@@ -381,6 +432,8 @@ public:
             {
                 if (check_if_item_fits(item, i, j) == 1)
                 {
+                    // coltul din stanga sus
+                    item_positions[item] = {i, j};
                     for (unsigned int k = i; k < i + item_height; k++)
                     {
                         for (unsigned int l = j; l < j + item_width; l++)
@@ -389,16 +442,18 @@ public:
                         }
                     }
                     return;
+
                 }
             }
         }
+        // daca a ajuns aici inseamna ca nu a putut pune itemul in inventar. Notificam user-ul
+        std::cout << item.get_name() + " nu a putut fi pus(a) in inventar" << std::endl; // aici templar face "I am no beast of burden" =)))))))
     }
 
     [[nodiscard]] std::array<std::array<Item, 10>, 6> get_inventory() const
     {
         return inventory;
     }
-
 
     void print_inventory() const
     {
@@ -420,12 +475,17 @@ int main() {
     // Pentru exemplu, încărcăm o textură dummy (în practică, ar trebui să o încarci dintr-un fișier)
     // itemLevel și alte atribute pot fi ajustate conform nevoilor tale
 
-    Item item("Sword", "Sabie Smechera",EQUIPMENT,MAGIC,20,83,2,3,1,1,3,1);
+    Item sabiuta("Sword", "Sabie Smechera",EQUIPMENT,MAGIC,20,83,2,3,1,1,3,1);
+    Item Chaos_Orb("Chaos Orb", "Reforces a rare item with new random proprieties", CURRENCY, NO_RARITY, NULL, NULL, 1, 1, 20, 1, 0, 0);
     // item.print_quality();
     // item.set_quality(28);
     // item.print_quality();
     Inventory inventory{};
-    inventory.place_item(item);
+    sabiuta.print_size();
+    Chaos_Orb.print_size();
+    inventory.place_item(Chaos_Orb);
+    inventory.place_item(sabiuta);
+    inventory.place_item(Chaos_Orb);
     inventory.print_inventory();
 
     std::cout << "Programul a terminat execuția\n";

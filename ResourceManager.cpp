@@ -16,6 +16,7 @@ ResourceManager::ResourceManager()
     loadTexture("images", "Sword.png");
     loadTexture("images", "default.png");
     loadTexture("images", "genericItem.png");
+    loadTexture("images", "Chaos Orb.png");
     //loadFont("fonts", "FiraSans-Regular.ttf");
 }
 

@@ -484,5 +484,13 @@
     <option name="/Default/CodeStyle/Generate/=CppEqualityOperators/Options/=UseTie/@EntryIndexRemoved" />
     <option name="/Default/CodeStyle/Generate/=CppEqualityOperators/Options/=GenerateSecondaryOperators/@EntryIndexedValue" value="True" type="string" />
     <option name="/Default/CodeStyle/Generate/=CppEqualityOperators/Options/=GenerateSecondaryOperators/@EntryIndexRemoved" />
+    <option name="/Default/CodeStyle/Generate/=CppHashFunction/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/CodeStyle/Generate/=CppHashFunction/Options/=CombineFunction/@EntryIndexedValue" value="shift and xor" type="string" />
+    <option name="/Default/CodeStyle/Generate/=CppHashFunction/Options/=CombineFunction/@EntryIndexRemoved" />
+    <option name="/Default/CodeStyle/Generate/=CppRelationalOperators/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/CodeStyle/Generate/=CppRelationalOperators/Options/=UseTie/@EntryIndexedValue" value="False" type="string" />
+    <option name="/Default/CodeStyle/Generate/=CppRelationalOperators/Options/=UseTie/@EntryIndexRemoved" />
+    <option name="/Default/CodeStyle/Generate/=CppRelationalOperators/Options/=GenerateSecondaryOperators/@EntryIndexedValue" value="True" type="string" />
+    <option name="/Default/CodeStyle/Generate/=CppRelationalOperators/Options/=GenerateSecondaryOperators/@EntryIndexRemoved" />
   </component>
 </project>
