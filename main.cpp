@@ -98,8 +98,8 @@ public:
         return !(lhs == rhs);
     }
 
-    [[nodiscard]] const std::string getShortName() const { return shortName; }
-    [[nodiscard]] const std::string getLongName()  const { return longName; }
+    [[nodiscard]] const std::string& getShortName() const { return shortName; }
+    [[nodiscard]] const std::string& getLongName()  const { return longName; }
     [[nodiscard]] unsigned int getTier()     const { return tier; }
 };
 
@@ -238,7 +238,7 @@ public:
     //void set_rarity(itemRarities const rarity) { this->rarity = rarity; } // va fi folosit la alchemy, regal, transmutation, scour orb
     //unsigned int get_quality() const { return quality; }
     //void set_quality(unsigned int quality) { this->quality = quality; }
-    std::vector<Mod>const get_affixes() const { return affixes; }
+    const std::vector<Mod>& get_affixes() const { return affixes; }
     void set_affixes(const std::vector<Mod>& affixes) { this->affixes = affixes; }
     //std::vector<Mod> get_implicit() const { return implicit; }
     //void set_implicit(const std::vector<Mod>& implicit) { this->implicit = implicit; }
