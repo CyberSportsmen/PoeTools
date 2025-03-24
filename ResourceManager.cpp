@@ -64,15 +64,15 @@ sf::Texture& ResourceManager::getTexture(const std::string& texture_name)
     return m_textures[texture_name];
 }
 
-sf::Font& ResourceManager::getFont(const std::string& font_name)
-{
-    // Înainte de a returna un font trebuie să verificăm dacă acel font există.
-    if(m_fonts.find(font_name) == m_fonts.end())
-    {
-        // Fiind un exemplu demonstrativ aruncăm std::runtime_error, dar la teme va trebui
-        // să vă faceți o ierarhie proprie de excepții
-        throw std::runtime_error("Font-ul " + font_name + " nu a fost gasit.");
-    }
-
-    return m_fonts[font_name];
-}
+//sf::Font& ResourceManager::getFont(const std::string& font_name)
+//{
+//    // Înainte de a returna un font trebuie să verificăm dacă acel font există.
+//    if(m_fonts.find(font_name) == m_fonts.end())
+//    {
+//        // Fiind un exemplu demonstrativ aruncăm std::runtime_error, dar la teme va trebui
+//        // să vă faceți o ierarhie proprie de excepții
+//        throw std::runtime_error("Font-ul " + font_name + " nu a fost gasit.");
+//    }
+//
+//    return m_fonts[font_name];
+//}
