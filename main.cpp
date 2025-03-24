@@ -117,26 +117,26 @@ public:
     void addAffix(const Mod& mod)  { affixes.push_back(mod); }
     void addWeightedMod(unsigned int weight, const Mod& mod) { weights[weight] = mod; }
 
-    // sterge un prefix
-    //bool removePrefix(const Mod& mod) {
-    //    auto it = std::ranges::find(prefixes, mod);
-    //    if(it != prefixes.end()){
-    //        prefixes.erase(it);
-    //        return true;
-    //    }
-    //    return false;
-    //}
-    // sterge un sufix
-    //bool removeSuffix(const Mod& mod) {
-    //    auto it = std::ranges::find(suffixes, mod);
-    //    if(it != suffixes.end()){
-    //        suffixes.erase(it);
-    //        return true;
-    //    }
-    //    return false;
-    //}
+    //sterge un prefix
+    [[maybe_unused]]bool removePrefix(const Mod& mod) {
+        auto it = std::ranges::find(prefixes, mod);
+        if(it != prefixes.end()){
+            prefixes.erase(it);
+            return true;
+        }
+        return false;
+    }
+    //sterge un sufix
+    [[maybe_unused]]bool removeSuffix(const Mod& mod) {
+        auto it = std::ranges::find(suffixes, mod);
+        if(it != suffixes.end()){
+            suffixes.erase(it);
+            return true;
+        }
+        return false;
+    }
     // sterge afix
-    bool removeAffix(const Mod& mod) {
+    [[maybe_unused]] bool removeAffix(const Mod& mod) {
         auto it = std::ranges::find(affixes, mod);
         if(it != affixes.end()){
             affixes.erase(it);
@@ -225,23 +225,22 @@ public:
     Item& operator=(Item&& other) noexcept = default;
 
     const std::string& get_name() const { return name; }
-    // void set_name(const std::string& newName) { name = newName; } nu redenumim item-ul inca (la crafting se va redenumi)
-    //std::string get_description() const { return description; } // ok asta chiar e inutil
-    //void set_description(const std::string& newDescription) { this->description = newDescription; }
-    //itemTypes get_type() const { return type; }
-    //void set_type(itemTypes type) { this->type = type; }
-    //unsigned int get_item_level() const { return itemLevel; } //util mai tarz
-    //void set_item_level(unsigned int item_level) { itemLevel = item_level; }
-    //sf::Texture get_texture() const { return texture; }
-    //void set_texture(const sf::Texture& texture) { this->texture = texture; }
-    //itemRarities get_rarity() const { return rarity; }
-    //void set_rarity(itemRarities const rarity) { this->rarity = rarity; } // va fi folosit la alchemy, regal, transmutation, scour orb
-    //unsigned int get_quality() const { return quality; }
-    //void set_quality(unsigned int quality) { this->quality = quality; }
-    const std::vector<Mod>& get_affixes() const { return affixes; }
-    void set_affixes(const std::vector<Mod>& affixes) { this->affixes = affixes; }
-    //std::vector<Mod> get_implicit() const { return implicit; }
-    //void set_implicit(const std::vector<Mod>& implicit) { this->implicit = implicit; }
+    [[maybe_unused]]void set_name(const std::string& newName) { name = newName; } //nu redenumim item-ul inca (la crafting se va redenumi)
+    [[maybe_unused]]void set_description(const std::string& newDescription) { this->description = newDescription; }
+    [[maybe_unused]]itemTypes get_type() const { return type; }
+    [[maybe_unused]]void set_type(itemTypes type) { this->type = type; }
+    [[maybe_unused]]unsigned int get_item_level() const { return itemLevel; } //util mai tarz
+    [[maybe_unused]]void set_item_level(unsigned int item_level) { itemLevel = item_level; }
+    [[maybe_unused]]sf::Texture get_texture() const { return texture; }
+    [[maybe_unused]]void set_texture(const sf::Texture& texture) { this->texture = texture; }
+    [[maybe_unused]]itemRarities get_rarity() const { return rarity; }
+    [[maybe_unused]]void set_rarity(itemRarities const rarity) { this->rarity = rarity; } // va fi folosit la alchemy, regal, transmutation, scour orb
+    [[maybe_unused]]unsigned int get_quality() const { return quality; }
+    [[maybe_unused]]void set_quality(unsigned int quality) { this->quality = quality; }
+    [[maybe_unused]]const std::vector<Mod>& get_affixes() const { return affixes; }
+    [[maybe_unused]]void set_affixes(const std::vector<Mod>& affixes) { this->affixes = affixes; }
+    [[maybe_unused]]std::vector<Mod> get_implicit() const { return implicit; }
+    [[maybe_unused]]void set_implicit(const std::vector<Mod>& implicit) { this->implicit = implicit; }
     unsigned int get_current_stack_size() const { return currentStackSize; }
     void set_current_stack_size(unsigned int current_stack_size) { this->currentStackSize = current_stack_size; }
     unsigned int get_maxStackSize() const { return maxStackSize; }
@@ -251,10 +250,10 @@ public:
     unsigned int get_maxSuffixes() const { return maxSuffixes; }
     unsigned int get_unique_id() const { return unique_id; }
 
-    //void print_quality() const { std::cout << "Quality: " << quality << std::endl; }
-    //void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
-    //void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }
-    //void print_unique_id() const { std::cout << "Unique ID: " << unique_id << std::endl; }
+    [[maybe_unused]]void print_quality() const { std::cout << "Quality: " << quality << std::endl; }
+    [[maybe_unused]]void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
+    [[maybe_unused]]void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }
+    [[maybe_unused]]void print_unique_id() const { std::cout << "Unique ID: " << unique_id << std::endl; }
 
     friend bool operator==(const Item& lhs, const Item& rhs)
     {
@@ -433,10 +432,10 @@ public:
     }
 
     // Remove a mod from the bench's pool.
-    //bool removeModFromBenchPool(const Mod& mod)
-    //{
-    //    return benchPool.removeAffix(mod);
-    //}
+    [[maybe_unused]]bool removeModFromBenchPool(const Mod& mod)
+    {
+        return benchPool.removeAffix(mod);
+    }
 
     // Adauga un mod, daca are loc
     static bool addModToWeapon(Item& weapon, const Mod& mod)
