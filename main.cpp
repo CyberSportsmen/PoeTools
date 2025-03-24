@@ -2,12 +2,13 @@
 #include <array>
 #include <chrono>
 #include <map>
+#include <utility>
 #include <vector>
 #include <string>
 #include <memory>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
-#include <utility>
+//#include <utility>
 #include "ResourceManager.hpp"  // Assumes a singleton resource manager for textures
 
 enum itemTypes
@@ -310,6 +311,8 @@ public:
     {
         return lhs.unique_id < rhs.unique_id;
     }
+
+    ~Item() = default;
 };
 
 unsigned int Item::item_count = 0;
@@ -473,6 +476,11 @@ public:
     void addModToBenchPool(const Mod& mod)
     {
         benchPool.addAffix(mod);
+    }
+
+    explicit CraftingBench(ModPool  bench_pool)
+        : benchPool(std::move(bench_pool))
+    {
     }
 
     // Remove a mod from the bench's pool.
