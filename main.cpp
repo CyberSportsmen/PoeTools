@@ -237,8 +237,8 @@ public:
     // [[maybe_unused]]void set_rarity(itemRarities const rarity) { this->rarity = rarity; } // va fi folosit la alchemy, regal, transmutation, scour orb
     // [[maybe_unused]]unsigned int get_quality() const { return quality; }
     // [[maybe_unused]]void set_quality(unsigned int quality) { this->quality = quality; }
-    const std::vector<Mod>& get_affixes() const { return affixes; }
-    void set_affixes(const std::vector<Mod>& affixes) { this->affixes = affixes; }
+    const std::vector<Mod>& get_affixes() const { return this->affixes; }
+    void set_affixes(const std::vector<Mod>& newAffixes) { this->affixes = newAffixes; }
     // [[maybe_unused]]std::vector<Mod> get_implicit() const { return implicit; }
     // [[maybe_unused]]void set_implicit(const std::vector<Mod>& implicit) { this->implicit = implicit; }
     unsigned int get_current_stack_size() const { return currentStackSize; }
