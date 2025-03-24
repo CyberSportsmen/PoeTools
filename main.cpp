@@ -2,24 +2,103 @@
 #include <array>
 #include <chrono>
 #include <thread>
+#include <map>
 
 #include <SFML/Graphics.hpp>
+#include <utility>
 
 #include <Helper.h>
 
 #include "ResourceManager.hpp"
 
-//////////////////////////////////////////////////////////////////////
-/// This class is used to test that the memory leak checks work as expected even when using a GUI
-class SomeClass {
-public:
-    explicit SomeClass(int) {}
+enum itemTypes
+{
+    EQUIPMENT,
+    CURRENCY,
+    MAP,
+    SPECIAL, //quest items, sunt cu text verde
 };
 
-SomeClass *getC() {
-    return new SomeClass{2};
-}
-//////////////////////////////////////////////////////////////////////
+const std::map<itemTypes, std::string> itemTypesToString;
+
+enum itemRarities
+{
+    NORMAL,
+    MAGIC, // blue
+    RARE,
+    UNIQUE,
+    UNIQUE_FOIL, // la fel ca unique doar ca e shiny
+};
+
+const std::map<itemRarities, std::string> itemRaritiesToString;
+
+enum equipmentTypes
+{
+    WEAPON,
+    BODYARMOR,
+    BOOTS,
+    GLOVES,
+    HELMET,
+    RING,
+    AMULET,
+    JEWEL,
+    BELT,
+    FLASK,
+};
+
+const std::map<equipmentTypes, std::string> equipmentTypesToString;
+
+class Mod
+{
+    std::string shortName;
+    std::string longName; // in joc cand apesi alt iti desface mod-ul si iti spune ce tier este,
+                          // si o descriere mai lunga, cu range-urile valorilor
+    unsigned int tier{};
+    public:
+    Mod(std::string  short_name, std::string  long_name, const unsigned int tier)
+        : shortName(std::move(short_name)),
+          longName(std::move(long_name)),
+          tier(tier)
+    {
+    }
+};
+
+class ModPool
+{
+    std::vector<std::string> prefixes;
+    std::vector<std::string> suffixes;
+    std::vector<std::string> affixes; // prefixe si sufixe insumate
+};
+
+class Item
+{
+    std::string name{"genericItem"};
+    std::string description{"This item has no description"};
+    itemTypes type;
+    // in functie de tip vom aprinde niste flag-uri, cu ce poate sa interactioneze item-ul, unde poate fi pus etc.
+    // nu vom face un caracter, vom face doar inventar, intrucat acest tool tot ce face este sa emuleze crafting-ul fara sa folosim
+    // banii (currency-ul) muncit in joc, pentru a il putea folosi eficient. Pe site-ul craftofexile.com lucrul asta este facut de
+    // 1000x de ori mai bine, dar pentru acest proiect va fi doar un tech demo pentru clase. Sunt zeci/sute de contribuitori la acel proiect
+    // si este extrem de folositor. Sugerez cu caldura o vizita pentru o mica comparatie cand este gata proiectul meu.
+    sf::Texture texture; // imagine item
+    std::string rarity; // in functie de raritate este afectata dimensiunea maxima de afixe (excludem deocamdata implicitele care schimba asta)
+    std::string quality;
+    std::vector<Mod> affixes; //
+    std::vector<Mod> implicit;
+public:
+    Item(const std::string& name, const std::string& description, const itemTypes type, const sf::Texture& texture)
+    {
+        this->name = name;
+        this->description = description;
+        this->type = type;
+        // pentru texturi, numele texturii va fi chiar numele item-ului, intrucat un item cu acelasi nume va avea mereu aceeasi poza
+        this->texture = texture;
+    }
+};
+
+
+
+
 
 void PersonalizeazaAvion(sf::Sprite& avion)
 {
