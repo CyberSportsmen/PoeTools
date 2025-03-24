@@ -1,39 +1,21 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
+# Path of Exile Tools and Emulator
 
-### Folosiți template-ul corespunzător grupei voastre!
-
-| Laborant  | Link template                                |
-|-----------|----------------------------------------------|
-| Dragoș B  | https://github.com/Ionnier/oop-template      |
-| Tiberiu M | https://github.com/MaximTiberiu/oop-template |
-| Marius MC | https://github.com/mcmarius/oop-template     |
-
-### Important!
-
-Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
-Codul generat pus "ca să fie"/pe care nu îl înțelegeți se punctează doar pentru puncte bonus, doar în contextul
-în care oferă funcționalități ajutătoare și doar dacă are sens.
-
-O cerință nu se consideră îndeplinită dacă este realizată doar prin cod generat.
-
-- **Fără cod de umplutură/fără sens!**
-- **Fără copy-paste!**
-- **Fără variabile globale!**
-- **Fără atribute publice!**
+# Proiect OOP Semestrul 2
 
 ### Tema 0
 
-- [ ] Nume proiect (poate fi schimbat ulterior)
-- [ ] Scurtă descriere a temei alese, ce v-ați propus să implementați
+- [✅] Nume proiect (poate fi schimbat ulterior)
+- [✅] Scurtă descriere a temei alese, ce v-ați propus să implementați
 
 ## Tema 1
 
 #### Cerințe
+
 - [ ] definirea a minim **3-4 clase** folosind compunere cu clasele definite de voi; moștenirile nu se iau în considerare aici
 - [ ] constructori de inițializare cu parametri pentru fiecare clasă
 - [ ] pentru o aceeași (singură) clasă: constructor de copiere, `operator=` de copiere, destructor
-<!-- - [ ] pentru o altă clasă: constructor de mutare, `operator=` de mutare, destructor -->
-<!-- - [ ] pentru o altă clasă: toate cele 5 funcții membru speciale -->
+  <!-- - [ ] pentru o altă clasă: constructor de mutare, `operator=` de mutare, destructor -->
+  <!-- - [ ] pentru o altă clasă: toate cele 5 funcții membru speciale -->
 - [ ] `operator<<` pentru **toate** clasele pentru afișare (`std::ostream`) folosind compunere de apeluri cu `operator<<`
 - [ ] cât mai multe `const` (unde este cazul) și funcții `private`
 - [ ] implementarea a minim 3 funcții membru publice pentru funcționalități netriviale specifice temei alese, dintre care cel puțin 1-2 funcții mai complexe
@@ -48,6 +30,7 @@ O cerință nu se consideră îndeplinită dacă este realizată doar prin cod g
 ## Tema 2
 
 #### Cerințe
+
 - [ ] separarea codului din clase în `.h` (sau `.hpp`) și `.cpp`
 - [ ] moșteniri:
   - minim o clasă de bază și **3 clase derivate** din aceeași ierarhie
@@ -69,7 +52,7 @@ O cerință nu se consideră îndeplinită dacă este realizată doar prin cod g
 - [ ] funcții și atribute `static`
 - [ ] STL
 - [ ] cât mai multe `const`
-- [ ] funcții *de nivel înalt*, de eliminat cât mai mulți getters/setters/funcții low-level
+- [ ] funcții _de nivel înalt_, de eliminat cât mai mulți getters/setters/funcții low-level
 - [ ] minim 75-80% din codul propriu să fie C++
 - [ ] la sfârșit: commit separat cu adăugarea unei noi clase derivate fără a modifica restul codului, **pe lângă cele 3 derivate deja adăugate** din aceeași ierarhie
   - noua derivată nu poate fi una existentă care a fost ștearsă și adăugată din nou
@@ -79,6 +62,7 @@ O cerință nu se consideră îndeplinită dacă este realizată doar prin cod g
 ## Tema 3
 
 #### Cerințe
+
 - [ ] 2 șabloane de proiectare (design patterns)
 - [ ] o clasă șablon cu sens; minim **2 instanțieri**
   - [ ] preferabil și o funcție șablon (template) cu sens; minim 2 instanțieri
@@ -86,13 +70,10 @@ O cerință nu se consideră îndeplinită dacă este realizată doar prin cod g
 <!-- - [ ] o specializare pe funcție/clasă șablon -->
 - [ ] tag de `git` pe commit cu **toate bifele**: de exemplu `v0.3` sau `v1.0`
 
-## Instrucțiuni de compilare
-
 Proiectul este configurat cu CMake.
 
-Instrucțiuni pentru terminal:
+Biblioteci necesare pe Linux (presupunem sistem de operare bazat pe Debian)
 
-0. Biblioteci necesare pe Linux (presupunem sistem de operare bazat pe Debian)
 ```sh
 sudo apt-get update && \
   sudo apt-get install libxrandr-dev \
@@ -111,12 +92,14 @@ sudo apt-get update && \
 Dacă lipsesc și alte biblioteci, ștergeți folder-ul de build de la pasul 1 și reconfigurați proiectul după ce ați instalat ce lipsea.
 
 1. Pasul de configurare
+
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 # sau ./scripts/cmake.sh configure
 ```
 
 Sau pe Windows cu GCC:
+
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
 # sau ./scripts/cmake.sh configure -g Ninja
@@ -124,8 +107,8 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
 
 La acest pas putem cere să generăm fișiere de proiect pentru diverse medii de lucru.
 
-
 2. Pasul de compilare
+
 ```sh
 cmake --build build --config Debug --parallel 6
 # sau ./scripts/cmake.sh build
@@ -133,8 +116,8 @@ cmake --build build --config Debug --parallel 6
 
 Cu opțiunea `parallel` specificăm numărul de fișiere compilate în paralel.
 
-
 3. Pasul de instalare (opțional)
+
 ```sh
 cmake --install build --config Debug --prefix install_dir
 # sau ./scripts/cmake.sh install
@@ -145,11 +128,9 @@ Vezi și [`scripts/cmake.sh`](scripts/cmake.sh).
 Observație: folderele `build/` și `install_dir/` sunt adăugate în fișierul `.gitignore` deoarece
 conțin fișiere generate și nu ne ajută să le versionăm.
 
-
 ## Resurse
 
 - [SFML](https://github.com/SFML/SFML/tree/2.6.1) (Zlib)
   - [OpenAL](https://openal-soft.org/) (LGPL): din cauza licenței, trebuie distribuită ca shared library
-- [Poza cu avionul](https://pixabay.com/vectors/travel-holiday-trip-flight-6913775/)
 - [Font](https://fonts.google.com/selection?selection.family=Fira+Sans)
-- adăugați trimiteri către resursele externe care v-au ajutat sau pe care le-ați folosit
+- [PoE_Trade](https://www.pathofexile.com/trade/search/Phrecia)
