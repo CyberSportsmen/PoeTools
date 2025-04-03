@@ -61,6 +61,13 @@ add_executable(${MAIN_EXECUTABLE_NAME}
     generated/src/Helper.cpp
     ResourceManager.cpp
     ResourceManager.hpp
+        include/Inventory.h
+        src/Inventory.cpp
+        include/Item.h
+        utils/enumerators.h
+        src/Item.cpp
+        include/Mod.h
+        src/Mod.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
