@@ -21,7 +21,7 @@ const std::string& Mod::getShortName() const
     return shortName;
 }
 
-Mod::Mod(std::string short_name, std::string long_name, const unsigned int tier)
+Mod::Mod(const std::string& short_name, const std::string& long_name, const unsigned int tier)
 {
     this->shortName = short_name;
     this->longName = long_name;

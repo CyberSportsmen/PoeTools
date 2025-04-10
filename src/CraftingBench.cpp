@@ -2,8 +2,6 @@
 // Created by Alex on 10 Apr 2025.
 //
 
-#pragma once
-
 #include "../include/CraftingBench.h"
 
 void CraftingBench::addModToBenchPool(const Mod& mod)
