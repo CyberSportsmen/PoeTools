@@ -68,6 +68,10 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/Item.cpp
         include/Mod.h
         src/Mod.cpp
+        include/ModPool.h
+        src/ModPool.cpp
+        include/CraftingBench.h
+        src/CraftingBench.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

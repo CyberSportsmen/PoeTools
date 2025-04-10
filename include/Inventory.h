@@ -7,9 +7,11 @@
 #include <array>
 #include <map>
 #include <memory>
+#include "Item.h"
 
-class Item;
-
+//-----------------------------------------------------------------
+// Inventory Class (6x10 grid)
+//-----------------------------------------------------------------
 class Inventory
 {
 private:
