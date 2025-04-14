@@ -2,6 +2,9 @@
 // Created by Alex on 10 Apr 2025.
 //
 #include "../include/ModPool.h"
+
+#include <ostream>
+
 #include "../include/Mod.h"
 
 [[nodiscard]] const std::vector<Mod>& ModPool::getAffixes() const
@@ -22,11 +25,13 @@ void ModPool::addAffix(const Mod& mod) { affixes.push_back(mod); }
 { return suffixes; }
 
 // FIXME: completely wrong logic.
-void ModPool::addWeightedMod(unsigned int weight, const Mod& mod) { weights[weight] = mod; }
+void ModPool::addWeightedMod(unsigned int weight, const Mod& mod)
+{
+    weights[weight] = mod;
+}
 
 [[maybe_unused]] bool ModPool::removeAffix(const Mod& mod) {
-    auto it = std::ranges::find(affixes, mod);
-    if(it != affixes.end()){
+    if(const auto it = std::ranges::find(affixes, mod); it != affixes.end()){
         affixes.erase(it);
         return true;
     }
@@ -35,8 +40,7 @@ void ModPool::addWeightedMod(unsigned int weight, const Mod& mod) { weights[weig
 
 //sterge un prefix, daca exista
 [[maybe_unused]]bool ModPool::removePrefix(const Mod& mod) {
-    auto it = std::ranges::find(prefixes, mod);
-    if(it != prefixes.end()){
+    if(const auto it = std::ranges::find(prefixes, mod); it != prefixes.end()){
         prefixes.erase(it);
         return true;
     }
@@ -44,10 +48,22 @@ void ModPool::addWeightedMod(unsigned int weight, const Mod& mod) { weights[weig
 }
 
 [[maybe_unused]]bool ModPool::removeSuffix(const Mod& mod) {
-    auto it = std::ranges::find(suffixes, mod);
-    if(it != suffixes.end()){
+    if(const auto it = std::ranges::find(suffixes, mod); it != suffixes.end()){
         suffixes.erase(it);
         return true;
     }
     return false;
+}
+std::ostream& operator<<(std::ostream& os, const ModPool& modPool)
+{
+    os << "Prefixes:" << std::endl;
+    for (const auto& mod : modPool.getPrefixes())
+        os << mod << std::endl;
+    os << "Suffixes:" << std::endl;
+    for (const auto& mod : modPool.getSuffixes())
+        os << mod << std::endl;
+    os << "Weights:" << std::endl;
+    for (const auto& mod : modPool.getWeights())
+        os << "Weight: " << mod.first << "\n" << mod.second << std::endl;
+    return os;
 }

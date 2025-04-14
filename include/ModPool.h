@@ -12,8 +12,9 @@ class ModPool
 {
     std::vector<Mod> prefixes;
     std::vector<Mod> suffixes;
-    std::vector<Mod> affixes; // suffix + prefix
     std::map<unsigned int, Mod> weights; // Each mod has a weight for selection
+    // TODO: REMOVE AFFIXES, REDUNDANT!
+    std::vector<Mod> affixes; // suffix + prefix
 public:
     // adaugă mod-uri
 
@@ -35,6 +36,7 @@ public:
     [[nodiscard]] const std::vector<Mod>& getSuffixes() const; //{ return suffixes; }
     [[nodiscard]] const std::vector<Mod>& getAffixes()  const; //{ return affixes; }
     [[nodiscard]] const std::map<unsigned int, Mod>& getWeights() const; // { return weights; }
-};
 
+    friend std::ostream& operator<<(std::ostream& os, const ModPool& modPool);
+};
 #endif //MODPOOL_H

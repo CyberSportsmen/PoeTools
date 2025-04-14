@@ -13,7 +13,7 @@ class Mod
     std::string longName{"GenericLongModName"};
     unsigned int tier{1};
 public:
-    Mod(const std::string& short_name, const std::string& long_name, const unsigned int tier);
+    Mod(const std::string& short_name, const std::string& long_name, unsigned int tier);
     Mod() = default;
     friend bool operator==(const Mod& lhs, const Mod& rhs);
     friend bool operator!=(const Mod& lhs, const Mod& rhs);
