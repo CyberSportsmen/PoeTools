@@ -3,7 +3,8 @@
 //
 
 #include "../include/CraftingBench.h"
-
+#include <vector>      // for std::vector
+#include <algorithm>   // for std::find
 // TODO: change Item& weapon to Weapon& weapon after creating child class EVERYWHERE where Item is in CraftingBench Class
 // STATUS: in progress
 
@@ -38,7 +39,8 @@ bool CraftingBench::removeModFromEquipment(Equipment& target, const Mod& mod)
         }
         catch (const std::exception& e)
         {
-            std::cout << "Could not remove Mod " << mod.getShortName() << " from Equipment " << target.get_name() << std::endl;
+            std::cout << "Could not remove prefix " << mod.getShortName() << " from Equipment " << target.get_name() << std::endl;
+            std::cout << e.what() << std::endl;
             return false;
         }
     }
@@ -53,7 +55,8 @@ bool CraftingBench::removeModFromEquipment(Equipment& target, const Mod& mod)
         }
         catch (const std::exception& e)
         {
-            std::cout << "Could not remove Mod " << mod.getShortName() << " from Equipment " << target.get_name() << std::endl;
+            std::cout << "Could not remove suffix " << mod.getShortName() << " from Equipment " << target.get_name() << std::endl;
+            std::cout << e.what() << std::endl;
             return false;
         }
     }

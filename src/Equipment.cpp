@@ -14,23 +14,23 @@ Equipment::Equipment()
     implicits = std::vector<Mod>();
 }
 
-void Equipment::setQuality(unsigned int quality)
+void Equipment::setQuality(unsigned int new_quality)
 {
-    this->quality = quality;
+    this->quality = new_quality;
 }
 
-void Equipment::setImplicits(const std::vector<Mod>& implicits)
+void Equipment::setImplicits(const std::vector<Mod>& new_implicits)
 {
-    this->implicits = implicits;
+    this->implicits = new_implicits;
 }
 
-void Equipment::setPrefixes(const std::vector<Mod>& prefixes)
+void Equipment::setPrefixes(const std::vector<Mod>& new_prefixes)
 {
-    this->prefixes = prefixes;
+    this->prefixes = new_prefixes;
 }
-void Equipment::setSuffixes(const std::vector<Mod>& suffixes)
+void Equipment::setSuffixes(const std::vector<Mod>& new_suffixes)
 {
-    this->suffixes = suffixes;
+    this->suffixes = new_suffixes;
 }
 
 Equipment::Equipment(unsigned int quality, itemTypes type, itemRarities rarity)
