@@ -72,6 +72,8 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/ModPool.cpp
         include/CraftingBench.h
         src/CraftingBench.cpp
+        include/Equipment.h
+        src/Equipment.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

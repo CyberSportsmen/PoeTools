@@ -17,7 +17,7 @@ bool Inventory::check_if_item_fits(const Item& item, unsigned int row, unsigned 
         {
             if (!inside(i, j) ||
                 inventory[i][j] == nullptr ||
-                inventory[i][j]->get_name() != "genericItem")
+                inventory[i][j]->get_name() != "emptySlot")
                 return false;
         }
     }
