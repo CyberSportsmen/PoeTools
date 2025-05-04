@@ -5,8 +5,6 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include <vector>
-#include "../include/Mod.h"
 #include "../utils/enumerators.h"
 #include "SFML/Graphics/Texture.hpp"
 

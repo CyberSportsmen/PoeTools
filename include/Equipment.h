@@ -14,7 +14,7 @@ class Equipment : public Item
 {
 private:
     unsigned int quality;
-    itemTypes type = EQUIPMENT;
+    equipmentTypes type;
     itemRarities rarity;
     std::vector<Mod> suffixes;
     std::vector<Mod> prefixes;
@@ -27,7 +27,7 @@ private:
     ModPool pool; // de aici stim pentru fiecare item ce mod-uri poate primi
 public:
     Equipment();
-    Equipment(unsigned int quality, itemTypes type, itemRarities rarity);
+    explicit Equipment(unsigned int quality, equipmentTypes type, itemRarities rarity,const std::string& name, const std::string& description, unsigned int width, unsigned int height, unsigned int maxSockets, unsigned int sockets) : Item(name, description, EQUIPMENT, width, height, 1, maxSockets, sockets), quality(quality), type(type), rarity(rarity){};
     ~Equipment() = default;
     // getters
     ModPool& getModPool() { return pool; }

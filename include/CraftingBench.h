@@ -5,9 +5,7 @@
 #ifndef CRAFTINGBENCH_H
 #define CRAFTINGBENCH_H
 
-#include "ModPool.h"
 #include "Equipment.h"
-#include <iostream>
 
 //-----------------------------------------------------------------
 // CraftingBench

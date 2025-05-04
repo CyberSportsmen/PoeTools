@@ -3,11 +3,12 @@
 //
 
 #include "../include/Equipment.h"
+#include "../utils/enumerators.h"
 
-Equipment::Equipment()
+Equipment::Equipment() : Item()
 {
     quality = 0;
-    type = EQUIPMENT;
+    type = WEAPON;
     rarity = NORMAL;
     suffixes = std::vector<Mod>();
     prefixes = std::vector<Mod>();
@@ -33,12 +34,6 @@ void Equipment::setSuffixes(const std::vector<Mod>& new_suffixes)
     this->suffixes = new_suffixes;
 }
 
-Equipment::Equipment(unsigned int quality, itemTypes type, itemRarities rarity)
-{
-    this->quality = quality;
-    this->type = type;
-    this->rarity = rarity;
-}
 
 
 

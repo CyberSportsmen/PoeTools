@@ -5,6 +5,7 @@
 #include "../include/CraftingBench.h"
 #include <vector>      // for std::vector
 #include <algorithm>   // for std::find
+#include <iostream>
 // TODO: change Item& weapon to Weapon& weapon after creating child class EVERYWHERE where Item is in CraftingBench Class
 // STATUS: in progress
 
