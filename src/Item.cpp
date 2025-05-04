@@ -3,6 +3,9 @@
 //
 
 #include "../include/Item.h"
+
+#include <iostream>
+
 #include "../ResourceManager.hpp"
 // Should be used for making empty inventory slots only!
 // TODO: ask if it can be made protected friend of inventory class
@@ -26,7 +29,11 @@ Item::Item(const std::string& name, const std::string& description, itemTypes ty
 {
     unique_id = ++item_count;
     this->name = name;
-    this->texture = ResourceManager::Instance().getTexture(name + ".png");
+    try {this->texture = ResourceManager::Instance().getTexture(name + ".png");}
+    catch (std::runtime_error& e) {
+        std::cout << e.what() << std::endl;
+        this->texture = ResourceManager::Instance().getTexture("default.png");
+    }
     this->description = description;
     this->type = type;
     this->width = width;
@@ -131,6 +138,19 @@ bool operator!=(const Item& lhs, const Item& rhs)
 bool operator<(const Item& lhs, const Item& rhs)
 {
     return lhs.unique_id < rhs.unique_id;
+}
+
+std::size_t hash_value(const Item &obj) {
+    std::size_t seed = 0x708C50FF;
+    seed ^= (seed << 6) + (seed >> 2) + 0x1125C1D9 + static_cast<std::size_t>(obj.type);
+    seed ^= (seed << 6) + (seed >> 2) + 0x0D315F92 + static_cast<std::size_t>(obj.unique_id);
+    seed ^= (seed << 6) + (seed >> 2) + 0x24658FEB + static_cast<std::size_t>(obj.width);
+    seed ^= (seed << 6) + (seed >> 2) + 0x3C2A7300 + static_cast<std::size_t>(obj.height);
+    seed ^= (seed << 6) + (seed >> 2) + 0x1E89D8B1 + static_cast<std::size_t>(obj.maxStackSize);
+    seed ^= (seed << 6) + (seed >> 2) + 0x17970981 + static_cast<std::size_t>(obj.currentStackSize);
+    seed ^= (seed << 6) + (seed >> 2) + 0x740C27DC + static_cast<std::size_t>(obj.maxSockets);
+    seed ^= (seed << 6) + (seed >> 2) + 0x27F74AD7 + static_cast<std::size_t>(obj.sockets);
+    return seed;
 }
 
 // IMPORTANT!

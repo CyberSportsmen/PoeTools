@@ -51,6 +51,9 @@ public:
     friend bool operator==(const Item& lhs, const Item& rhs);
     friend bool operator!=(const Item& lhs, const Item& rhs);
     friend bool operator<(const Item& lhs, const Item& rhs);
+
+    friend std::size_t hash_value(const Item &obj);
+
     ~Item() = default;
 };
 

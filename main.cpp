@@ -4,7 +4,7 @@
 #include "utils/enumerators.h"
 #include "include/CraftingBench.h"
 #include "include/Currency.h"
-
+#include "utils/CurrencyTable.h"
 //-----------------------------------------------------------------
 // TODO: ask about WinMain
 // main function, will probably be made singleton
@@ -14,14 +14,17 @@ int main() {
     //TODO: CREATE A STRUCT THAT CONTAINS AND INITIALISES ALL CURRENCY ITEMS IN THE GAME
     Item *Sword = new Equipment(20, WEAPON, NORMAL, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4);
     //Item Chaos_Orb("Chaos Orb", "Reforges a rare item with new random properties", CURRENCY, 1, 1, 20, 0, 0);
-    Item *chaos_orb = new Currency(RARE, CHAOS, "Chaos Orb", "Reforges a rare item with new random properties");
+    //Item *chaos_orb = new Currency(RARE, CHAOS, "Chaos Orb", "Reforges a rare item with new random properties");
+    Item * chaos_orb = CurrencyTable::GetOrb(CHAOS);
+    Item * transmutation_orb = CurrencyTable::GetOrb(TRANSMUTATION);
     Inventory inventory;
     inventory.place_item(*chaos_orb);
     inventory.place_item(*Sword);
+    inventory.place_item(*transmutation_orb);
     inventory.place_item(*chaos_orb); // Ar trebui sa fie stackabile
+    //inventory.place_item(*alchemy_orb);
     inventory.print_inventory();
-
-
+    chaos_orb = CurrencyTable::GetOrb(CHAOS);
 
     // Creez ModPool
     // ModPool modPool;

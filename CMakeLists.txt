@@ -77,6 +77,7 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         include/Currency.h
         src/Currency.cpp
         utils/CurrencyTable.h
+        utils/CurrencyTable.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

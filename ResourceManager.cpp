@@ -4,6 +4,9 @@
 
 #include "ResourceManager.hpp"
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 ResourceManager& ResourceManager::Instance()
 {
@@ -13,10 +16,19 @@ ResourceManager& ResourceManager::Instance()
 
 ResourceManager::ResourceManager()
 {
-    loadTexture("images", "Sword.png");
-    loadTexture("images", "default.png");
-    loadTexture("images", "genericItem.png");
-    loadTexture("images", "Chaos Orb.png");
+    const std::string folder = "images";
+    try {
+        for (const auto& entry : fs::directory_iterator(folder)) {
+            if (entry.is_regular_file()) {
+                const std::string filename = entry.path().filename().string();
+                if (entry.path().extension() == ".png") {
+                    loadTexture(folder, filename);
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error accessing folder: " << e.what() << std::endl;
+    }
     loadFont("fonts", "FiraSans-Regular.ttf");
 }
 
