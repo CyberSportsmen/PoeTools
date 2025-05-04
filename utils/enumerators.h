@@ -24,6 +24,16 @@ const std::map<itemTypes, std::string> itemTypesToString = {
     {SPECIAL, "SPECIAL"}
 };
 
+// many more but these are the essential, others are niche
+enum currencyTypes {
+    CHAOS,
+    TRANSMUTATION,
+    ALCHEMY,
+    SCOURING,
+    EXALTED,
+    ANNULMENT,
+};
+
 enum itemRarities
 {
     NORMAL,
@@ -32,6 +42,7 @@ enum itemRarities
     UNIQUE,
     UNIQUE_FOIL, // shiny unique
     NO_RARITY,
+    ANY, // placeholder for when it does not matter to check the rarity (i.e. Scouring orb (since we don't have unique items))
 };
 
 const std::map<itemRarities, std::string> itemRaritiesToString = {

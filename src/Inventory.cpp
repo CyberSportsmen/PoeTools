@@ -104,9 +104,9 @@ void Inventory::print_inventory() const
     {
         for (unsigned int column = 0; column < 10; column++)
         {
-            if (inventory[row][column] != nullptr)
+            if (inventory[row][column] != nullptr || inventory[row][column]->get_name() != "emptySlot")
                 std::cout << inventory[row][column]->get_name() << " x"
-                          << inventory[row][column]->get_current_stack_size() << "   ";
+                          << inventory[row][column]->get_current_stack_size() << "  ";
             else
                 std::cout << "empty   ";
         }

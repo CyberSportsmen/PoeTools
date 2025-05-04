@@ -74,6 +74,9 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/CraftingBench.cpp
         include/Equipment.h
         src/Equipment.cpp
+        include/Currency.h
+        src/Currency.cpp
+        utils/CurrencyTable.h
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
