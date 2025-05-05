@@ -23,7 +23,9 @@ private:
     [[nodiscard]] bool tryStackItem(const Item& item) const;
 public:
     Inventory();
+    void clear();
     void place_item(const Item& item);
+    void remove_item(const Item& item);
     void print_inventory() const;
     friend std::ostream& operator<<(std::ostream& os, const Inventory& inventory);
 

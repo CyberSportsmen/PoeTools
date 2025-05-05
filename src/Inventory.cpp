@@ -51,9 +51,33 @@ bool Inventory::tryStackItem(const Item& item) const
     return false;
 }
 
+void Inventory::remove_item(const Item& item) {
+    for (unsigned int i = 0; i < 6; i++) {
+        for (unsigned int j = 0; j < 10; j++) {
+            if (inventory[i][j]->get_name() == item.get_name()) {
+                if (inventory[i][j]->get_current_stack_size() > 1)
+                    inventory[i][j]->set_current_stack_size(inventory[i][j]->get_current_stack_size() - 1);
+                else if (inventory[i][j]->get_current_stack_size() == 1)
+                    inventory[i][j] = std::make_unique<Item>();
+                return;
+            }
+        }
+    }
+}
+
 Inventory::Inventory()
 {
     // Initialize each cell with a default "empty" generic item.
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        for (unsigned int j = 0; j < 10; j++)
+        {
+            inventory[i][j] = std::make_unique<Item>();
+        }
+    }
+}
+
+void Inventory::clear() {
     for (unsigned int i = 0; i < 6; i++)
     {
         for (unsigned int j = 0; j < 10; j++)

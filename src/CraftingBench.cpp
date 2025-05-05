@@ -244,23 +244,23 @@ void CraftingBench::removeRandomModFromEquipment(Equipment& target) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, 1);
     int which = dist(gen);
-    bool done = 0;
+    bool done = false;
     int counter = 0;
     starttrial:
     counter++;
-    if (which == 0) {
+    if (which == 0 && prefsize > 0) {
         // delete from prefixes
         int place = rand() % prefsize;
          done = removeModFromEquipment(target, pref[place]);
     }
-    if (which == 1) {
+    if (which == 1 && suffsize > 0) {
         // delete from suffixes
         int place = rand() % suffsize;
         done = removeModFromEquipment(target, suff[place]);
     }
     if (!done) {
         which = 1 - which; // switch sides and try again
-        if (counter <= 2)
+        if (counter < 2)
             goto starttrial;
     }
 }

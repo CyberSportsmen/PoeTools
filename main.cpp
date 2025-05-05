@@ -51,12 +51,15 @@ int main() {
     CraftingBench::removeRandomModFromEquipment(*sw);
     CraftingBench::removeRandomModFromEquipment(*sw);
     CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
+
+
     std::cout << *sw << '\n';
 
+    inventory.remove_item(*chaos_orb);
+    inventory.remove_item(*chaos_orb);
+    inventory.print_inventory();
+    inventory.clear();
+    inventory.print_inventory();
     // std::cout << modPool << "\n";
     return 0;
 }
