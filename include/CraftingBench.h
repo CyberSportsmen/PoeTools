@@ -5,6 +5,8 @@
 #ifndef CRAFTINGBENCH_H
 #define CRAFTINGBENCH_H
 
+#include <random>
+#include <ctime>
 #include "Equipment.h"
 
 //-----------------------------------------------------------------
@@ -14,11 +16,16 @@
 //-----------------------------------------------------------------
 struct CraftingBench
 {
-    CraftingBench() = default;
-    ~CraftingBench() = default;
+    CraftingBench() = delete;
+    ~CraftingBench() = delete;
     // Adaugă un mod, daca are loc
     static bool addModToEquipment(Equipment& target, const Mod& mod);
     static bool removeModFromEquipment(Equipment& target, const Mod& mod);
+    static bool addPrefixToEquipment(Equipment& target, const Mod& mod);
+    static bool addSuffixToEquipment(Equipment& target, const Mod& mod);
+    static bool addRandomModToEquipment(Equipment& target);
+    static void removeAllModFromEquipment(Equipment& target);
+    static bool removeRandomModFromEquipment(Equipment& target, const Mod& mod);
 };
 
 #endif //CRAFTINGBENCH_H

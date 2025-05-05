@@ -36,7 +36,7 @@
     if (!canBeAdded)
         return false;
     // the mod is in the modpool
-    // search wether it is a prefix or suffix
+    // search if it is a prefix or suffix
     bool isPrefix = false;
     for (const auto& modPoolMod : target.getModPool().getPrefixes()) {
         if (mod == modPoolMod)
@@ -49,7 +49,7 @@
             case NORMAL:
                 return false;
             case MAGIC:
-                if (target.getCurrentPrefixes().size() >= 2)
+                if (!target.getCurrentPrefixes().empty())
                     return false;
                 break;
             case RARE:
@@ -69,12 +69,12 @@
             isSuffix = true;
     }
     if (isSuffix) {
-        // it is a prefix
+        // it is a suffix
         switch (target.get_current_rarity()) {
             case NORMAL:
                 return false;
             case MAGIC:
-                if (target.getCurrentSuffixes().size() >= 2)
+                if (!target.getCurrentSuffixes().empty())
                     return false;
                 break;
             case RARE:
@@ -88,7 +88,7 @@
         return true;
     }
     // should be in affixes though
-    return false;
+    return false; // problem with program
 }
 
 bool CraftingBench::removeModFromEquipment(Equipment& target, const Mod& mod)
@@ -130,3 +130,89 @@ bool CraftingBench::removeModFromEquipment(Equipment& target, const Mod& mod)
     std::cout << "Mod " << mod.getShortName() << " not found on weapon " << target.get_name() << std::endl;
     return false;
 }
+// DEPRICATED, should not use at all, but is faster
+bool CraftingBench::addPrefixToEquipment(Equipment& target, const Mod& mod) {
+    // verificam daca avem loc
+    auto targPref = target.getCurrentPrefixes();
+    auto rarity = target.get_current_rarity();
+    if (rarity == RARE && targPref.size() >= 3)
+        return false;
+    if (rarity == MAGIC && !targPref.empty())
+        return false;
+    if (rarity != RARE && rarity != MAGIC)
+        return false;
+    // putem adauga fara probleme
+    targPref.push_back(mod);
+    target.setPrefixes(targPref);
+    return true;
+}
+// DEPRICATED, should not use at all, but is faster;
+bool CraftingBench::addSuffixToEquipment(Equipment& target, const Mod& mod) {
+    // verificam daca avem loc
+    auto targSuf = target.getCurrentSuffixes();
+    auto rarity = target.get_current_rarity();
+    if (rarity == RARE && targSuf.size() >= 3)
+        return false;
+    if (rarity == MAGIC && !targSuf.empty())
+        return false;
+    if (rarity != RARE && rarity != MAGIC)
+        return false;
+    // putem adauga fara probleme
+    targSuf.push_back(mod);
+    target.setSuffixes(targSuf);
+    return true;
+}
+
+bool CraftingBench::addRandomModToEquipment(Equipment& target) {
+    auto targetpool = target.getModPool();
+    auto sufixpool = targetpool.getSuffixes();
+    auto prefixpool = targetpool.getPrefixes();
+    auto rarity = target.get_current_rarity();
+    int suffxnr = target.getCurrentSuffixes().size();
+    int prefixnr = target.getCurrentPrefixes().size();
+    int slotsavailable;
+    if (rarity == RARE)
+        slotsavailable = 6;
+    else if (rarity == MAGIC)
+        slotsavailable = 2;
+    else
+        slotsavailable = 0;
+    slotsavailable -= suffxnr + prefixnr;
+    if (slotsavailable <= 0)
+        return false;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 1);
+    int which = 2; // 0 for prefix, 1 for suffix
+    if (suffxnr > 0 && prefixnr > 0) {
+        // flip a coin if we add a prefix or a suffix
+        which = dist(gen);
+    }
+    else if (suffxnr > 0)
+        which = 1;
+    else which = 0;
+    if (which == 2)
+        return false;
+    if (which == 0)
+    {
+        // add a random prefix;
+        auto mod = sufixpool[rand() % sufixpool.size()];
+        addModToEquipment(target, mod); // should work
+    }
+    else {
+        // add a random suffix
+        auto mod = prefixpool[rand() % prefixpool.size()];
+        addModToEquipment(target, mod);
+    }
+    return true;
+}
+
+void CraftingBench::removeAllModFromEquipment(Equipment& target) {
+    // TODO: for scouring orb also modify rarity of item.
+    target.setPrefixes(std::vector<Mod>{});
+    target.setSuffixes(std::vector<Mod>{});
+}
+bool CraftingBench::removeRandomModFromEquipment(Equipment& target, const Mod& mod) {
+    return false;
+}
+

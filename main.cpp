@@ -11,6 +11,7 @@
 // main function, will probably be made singleton
 //-----------------------------------------------------------------
 int main() {
+    srand(time(0));
     // Creez ModPool
     ModPool modPool;
     modPool.addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
@@ -22,7 +23,7 @@ int main() {
     modPool.addSuffix(Mod("IncCrit", "Increased Critical Strike Chance", 3));
 
 
-    Item *Sword = new Equipment(20, WEAPON, NORMAL, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4, modPool);
+    Item *Sword = new Equipment(20, WEAPON, RARE, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4, modPool);
     //Item Chaos_Orb("Chaos Orb", "Reforges a rare item with new random properties", CURRENCY, 1, 1, 20, 0, 0);
     //Item *chaos_orb = new Currency(RARE, CHAOS, "Chaos Orb", "Reforges a rare item with new random properties");
     Item * chaos_orb = CurrencyTable::GetOrb(CHAOS);
@@ -36,8 +37,14 @@ int main() {
     chaos_orb = CurrencyTable::GetOrb(CHAOS);
     inventory.print_inventory();
     Equipment* sw = dynamic_cast<Equipment*>(Sword);
-    sw->addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
-    sw->addSuffix(Mod("IncCrit", "Increased Critical Strike Chance", 3));
+    //sw->addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    //CraftingBench::addModToEquipment(*sw, Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    //CraftingBench::addModToEquipment(*sw, Mod("IncCrit", "Increased Critical Strike Chance", 3));
+    CraftingBench::addRandomModToEquipment(*sw);
+    CraftingBench::addRandomModToEquipment(*sw);
+    CraftingBench::addRandomModToEquipment(*sw);
+    CraftingBench::addRandomModToEquipment(*sw);
+
     std::cout << *sw << '\n';
 
     // std::cout << modPool << "\n";

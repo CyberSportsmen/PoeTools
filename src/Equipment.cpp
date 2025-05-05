@@ -15,18 +15,34 @@ Equipment::Equipment() : Item()
     implicits = std::vector<Mod>();
 }
 
+// IMPORTANT: USE ONLY FOR TESTING
 void Equipment::addPrefix(const Mod& mod) {
     auto new_prefixes = getCurrentPrefixes();
     new_prefixes.push_back(mod);
     setPrefixes(new_prefixes);
 }
-
+// IMPORTANT: USE ONLY FOR TESTING
 void Equipment::addSuffix(const Mod& mod) {
     auto new_suffixes = getCurrentSuffixes();
     new_suffixes.push_back(mod);
     setSuffixes(new_suffixes);
 }
 
+bool Equipment::alreadyContainsMod(const Mod& mod) {
+    auto pref = getCurrentPrefixes();
+    auto suff = getCurrentSuffixes();
+    for (auto pr : pref) {
+        if (pr == mod) {
+            return true;
+        }
+    }
+    for (auto sf : suff) {
+        if (sf == mod) {
+            return true;
+        }
+    }
+    return false;
+}
 
 std::ostream& operator<<(std::ostream& os, Equipment& equipment) {
     const auto currentPrefixes = equipment.getCurrentPrefixes();

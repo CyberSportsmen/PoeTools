@@ -39,6 +39,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, Equipment& equipment); // outputs all the mods of an item
     void addPrefix(const Mod& mod);
     void addSuffix(const Mod& mod);
+    bool alreadyContainsMod(const Mod& mod);
     std::vector<Mod>& getCurrentImplicits(){return implicits;}
     [[nodiscard]] itemRarities get_current_rarity() const;
     void set_rarity(itemRarities rarity);
