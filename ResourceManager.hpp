@@ -34,6 +34,7 @@ private:
     // Funcțiile de `load*()` pot fi modificate în funcție de preferințele voastre
     void loadTexture(const std::string& path, const std::string& texture_name);
     void loadFont(const std::string& path, const std::string& font_name);
+    void loadAll();
 
     std::unordered_map<std::string, sf::Texture> m_textures; // Aici vom ține toate texturile încărcate
     std::unordered_map<std::string, sf::Font> m_fonts; // Aici vom ține toate font-urile încărcate

@@ -78,6 +78,9 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/Currency.cpp
         utils/CurrencyTable.h
         utils/CurrencyTable.cpp
+        include/Errors.h
+        include/ErrorHandler.h
+        src/ErrorHandler.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

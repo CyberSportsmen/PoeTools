@@ -6,6 +6,8 @@
 #include <iostream>
 #include <filesystem>
 
+#include "include/Errors.h"
+
 namespace fs = std::filesystem;
 
 ResourceManager& ResourceManager::Instance()
@@ -16,21 +18,44 @@ ResourceManager& ResourceManager::Instance()
 
 ResourceManager::ResourceManager()
 {
-    const std::string folder = "images";
+    loadAll();
+}
+
+void ResourceManager::loadAll() {
+    const std::string imageFolder = "images";
+    // Load all .png textures
     try {
-        for (const auto& entry : fs::directory_iterator(folder)) {
-            if (entry.is_regular_file()) {
-                const std::string filename = entry.path().filename().string();
-                if (entry.path().extension() == ".png") {
-                    loadTexture(folder, filename);
+        for (const auto& entry : fs::directory_iterator(imageFolder)) {
+            if (!entry.is_regular_file()) continue;
+            const auto& path = entry.path();
+            if (path.extension() == ".png") {
+                const std::string filename = path.filename().string();
+                try {
+                    loadTexture(imageFolder, filename);
+                }
+                catch (const std::exception& e) {
+                    // Wrap any failure in loading a specific texture
+                    throw ResourceError(imageFolder + "/" + filename, e.what());
                 }
             }
         }
-    } catch (const std::exception& e) {
-        std::cerr << "Error accessing folder: " << e.what() << std::endl;
     }
-    loadFont("fonts", "FiraSans-Regular.ttf");
+    catch (const std::exception& e) {
+        // Filesystem iteration/access error
+        throw ResourceError(imageFolder, e.what());
+    }
+
+    // Load the font
+    const std::string fontFolder   = "fonts";
+    const std::string fontFilename = "FiraSans-Regular.ttf";
+    try {
+        loadFont(fontFolder, fontFilename);
+    }
+    catch (const std::exception& e) {
+        throw ResourceError(fontFolder + "/" + fontFilename, e.what());
+    }
 }
+
 
 void ResourceManager::loadTexture(const std::string& path, const std::string& texture_name)
 {

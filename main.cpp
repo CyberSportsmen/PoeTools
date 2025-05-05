@@ -1,17 +1,20 @@
 #include <iostream>
 #include <string>
+
+#include "ResourceManager.hpp"
 #include "include/Inventory.h"
 #include "include/Item.h"
 #include "utils/enumerators.h"
 #include "include/CraftingBench.h"
 #include "include/Currency.h"
+#include "include/ErrorHandler.h"
 #include "utils/CurrencyTable.h"
 //-----------------------------------------------------------------
 // TODO: ask about WinMain
 // main function, will probably be made singleton
 //-----------------------------------------------------------------
-int main() {
-    srand(time(0));
+
+void work() {
     // Creez ModPool
     ModPool modPool;
     modPool.addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
@@ -60,6 +63,20 @@ int main() {
     inventory.print_inventory();
     inventory.clear();
     inventory.print_inventory();
-    // std::cout << modPool << "\n";
-    return 0;
+}
+
+int main() {
+
+    ErrorHandler::initLog("PoeTools.log");
+    try {
+        auto loadAll() -> ResourceManager;
+        work();
+    }
+    catch (const std::exception& e) {
+        ErrorHandler::handle(e, "main");
+        return EXIT_FAILURE;
+    }
+    ErrorHandler::shutdown();
+    return EXIT_SUCCESS;
+
 }
