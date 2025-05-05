@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
 
+#include "include/ErrorHandler.h"
 #include "ResourceManager.hpp"
 #include "include/Inventory.h"
 #include "include/Item.h"
 #include "utils/enumerators.h"
 #include "include/CraftingBench.h"
 #include "include/Currency.h"
-#include "include/ErrorHandler.h"
 #include "utils/CurrencyTable.h"
 //-----------------------------------------------------------------
 // TODO: ask about WinMain
