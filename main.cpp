@@ -44,7 +44,8 @@ int main() {
     CraftingBench::addRandomModToEquipment(*sw);
     CraftingBench::addRandomModToEquipment(*sw);
     CraftingBench::addRandomModToEquipment(*sw);
-
+    CraftingBench::addRandomModToEquipment(*sw);
+    CraftingBench::addRandomModToEquipment(*sw);
     std::cout << *sw << '\n';
 
     // std::cout << modPool << "\n";

@@ -3,6 +3,9 @@
 //
 
 #include "../include/Equipment.h"
+
+#include <iostream>
+
 #include "../utils/enumerators.h"
 
 Equipment::Equipment() : Item()
@@ -29,27 +32,38 @@ void Equipment::addSuffix(const Mod& mod) {
 }
 
 bool Equipment::alreadyContainsMod(const Mod& mod) {
-    auto pref = getCurrentPrefixes();
-    auto suff = getCurrentSuffixes();
-    for (auto pr : pref) {
+    const auto pref = getCurrentPrefixes();
+    const auto suff = getCurrentSuffixes();
+
+    //std::cout << "Looking for mod: " << mod << std::endl;
+
+    for (const auto& pr : pref) {
+        //std::cout << "Checking prefix: " << pr << std::endl;
         if (pr == mod) {
+            //std::cout << "Match found in prefixes." << std::endl;
             return true;
         }
     }
-    for (auto sf : suff) {
+
+    for (const auto& sf : suff) {
+        //std::cout << "Checking suffix: " << sf << std::endl;
         if (sf == mod) {
+            //std::cout << "Match found in suffixes." << std::endl;
             return true;
         }
     }
+    //std::cout << "No match found." << std::endl;
     return false;
 }
 
 std::ostream& operator<<(std::ostream& os, Equipment& equipment) {
     const auto currentPrefixes = equipment.getCurrentPrefixes();
     const auto currentSuffixes = equipment.getCurrentSuffixes();
+    os << "Prefixes:\n";
     for (const auto & pref : currentPrefixes) {
         os << pref << "\n";
     }
+    os << "Suffixes:\n";
     for (const auto & suff : currentSuffixes) {
         os << suff << "\n";
     }

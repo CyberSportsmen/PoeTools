@@ -27,6 +27,8 @@
 //searches through target's suffixes and prefixes and removes a mod, if found
 
 [[maybe_unused]] bool CraftingBench::addModToEquipment(Equipment& target, const Mod& mod) {
+    if (target.alreadyContainsMod(mod))
+        return false;
     bool canBeAdded = false;
     for (const auto& modPoolMod : target.getModPool().getAffixes()) {
         if (mod == modPoolMod)
@@ -133,6 +135,8 @@ bool CraftingBench::removeModFromEquipment(Equipment& target, const Mod& mod)
 // DEPRICATED, should not use at all, but is faster
 bool CraftingBench::addPrefixToEquipment(Equipment& target, const Mod& mod) {
     // verificam daca avem loc
+    if (target.alreadyContainsMod(mod))
+        return false;
     auto targPref = target.getCurrentPrefixes();
     auto rarity = target.get_current_rarity();
     if (rarity == RARE && targPref.size() >= 3)
@@ -149,6 +153,8 @@ bool CraftingBench::addPrefixToEquipment(Equipment& target, const Mod& mod) {
 // DEPRICATED, should not use at all, but is faster;
 bool CraftingBench::addSuffixToEquipment(Equipment& target, const Mod& mod) {
     // verificam daca avem loc
+    if (target.alreadyContainsMod(mod))
+        return false;
     auto targSuf = target.getCurrentSuffixes();
     auto rarity = target.get_current_rarity();
     if (rarity == RARE && targSuf.size() >= 3)
@@ -171,13 +177,20 @@ bool CraftingBench::addRandomModToEquipment(Equipment& target) {
     int suffxnr = target.getCurrentSuffixes().size();
     int prefixnr = target.getCurrentPrefixes().size();
     int slotsavailable;
-    if (rarity == RARE)
-        slotsavailable = 6;
-    else if (rarity == MAGIC)
-        slotsavailable = 2;
-    else
-        slotsavailable = 0;
-    slotsavailable -= suffxnr + prefixnr;
+    if (rarity == RARE){
+        suffxnr = 3 -suffxnr;
+        prefixnr = 3 -prefixnr;
+    }
+    else if (rarity == MAGIC) {
+        suffxnr = 1 -suffxnr;
+        prefixnr = 1 -prefixnr;
+    }
+    else {
+        suffxnr = 0;
+        prefixnr = 0;
+    }
+    slotsavailable = suffxnr + prefixnr; // WHYYYYYYYYYYYYYYYYYYYYY
+    //std::cout << slotsavailable << ' ' << suffxnr << ' ' << prefixnr << std::endl;
     if (slotsavailable <= 0)
         return false;
     std::random_device rd;
@@ -196,13 +209,20 @@ bool CraftingBench::addRandomModToEquipment(Equipment& target) {
     if (which == 0)
     {
         // add a random prefix;
-        auto mod = sufixpool[rand() % sufixpool.size()];
-        addModToEquipment(target, mod); // should work
+        int ok = 0;
+        while (!ok){
+            // must be able to add here
+            ok = addModToEquipment(target, prefixpool[rand() % prefixpool.size()]);
+        }
     }
     else {
         // add a random suffix
-        auto mod = prefixpool[rand() % prefixpool.size()];
-        addModToEquipment(target, mod);
+        //auto mod = prefixpool[rand() % prefixpool.size()];
+        int ok = 0;
+        while (!ok){
+            // must be able to add here
+            ok = addModToEquipment(target, sufixpool[rand() % sufixpool.size()]);
+        }
     }
     return true;
 }

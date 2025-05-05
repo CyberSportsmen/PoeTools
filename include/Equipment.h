@@ -34,8 +34,8 @@ public:
     ~Equipment() override = default;
     // getters
     ModPool& getModPool() { return pool; }
-    std::vector<Mod>& getCurrentPrefixes(){return prefixes;}
-    std::vector<Mod>& getCurrentSuffixes(){return suffixes;}
+    std::vector<Mod>& getCurrentPrefixes(){return this->prefixes;}
+    std::vector<Mod>& getCurrentSuffixes(){return this->suffixes;}
     friend std::ostream& operator<<(std::ostream& os, Equipment& equipment); // outputs all the mods of an item
     void addPrefix(const Mod& mod);
     void addSuffix(const Mod& mod);
