@@ -16,6 +16,7 @@ class ModPool
     // TODO: REMOVE AFFIXES, REDUNDANT!
     std::vector<Mod> affixes; // suffix + prefix
     void addAffix(const Mod& mod);
+    [[maybe_unused]]void removeAffix(const Mod& mod);
 public:
     // adaugă mod-uri
 
@@ -26,11 +27,10 @@ public:
     void addWeightedMod(unsigned int weight, const Mod& mod);
 
     //sterge un prefix, daca exista
-    [[maybe_unused]]bool removePrefix(const Mod& mod);
+    [[maybe_unused]]void removePrefix(const Mod& mod);
     //sterge un sufix, daca exista
-    [[maybe_unused]]bool removeSuffix(const Mod& mod);
-    // sterge un afix, daca exista
-    [[maybe_unused]] bool removeAffix(const Mod& mod);
+    [[maybe_unused]]void removeSuffix(const Mod& mod);
+
 
     [[nodiscard]] const std::vector<Mod>& getPrefixes() const; //{ return prefixes; }
     [[nodiscard]] const std::vector<Mod>& getSuffixes() const; //{ return suffixes; }

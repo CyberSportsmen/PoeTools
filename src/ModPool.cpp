@@ -31,29 +31,37 @@ void ModPool::addWeightedMod(unsigned int weight, const Mod& mod)
     weights[weight] = mod;
 }
 
-[[maybe_unused]] bool ModPool::removeAffix(const Mod& mod) {
-    if(const auto it = std::ranges::find(affixes, mod); it != affixes.end()){
-        affixes.erase(it);
-        return true;
+[[maybe_unused]] void ModPool::removeAffix(const Mod& mod) {
+    std::vector<Mod> newAffixes;
+    for (auto w : affixes) {
+        if (w != mod) {
+            newAffixes.push_back(w);
+        }
     }
-    return false;
+    affixes = newAffixes;
 }
 
 //sterge un prefix, daca exista
-[[maybe_unused]]bool ModPool::removePrefix(const Mod& mod) {
-    if(const auto it = std::ranges::find(prefixes, mod); it != prefixes.end()){
-        prefixes.erase(it);
-        return true;
+[[maybe_unused]]void ModPool::removePrefix(const Mod& mod) {
+    std::vector<Mod> newPrefixes;
+    for (auto w : prefixes) {
+        if (w != mod) {
+            newPrefixes.push_back(w);
+        }
     }
-    return false;
+    prefixes = newPrefixes;
+    removeAffix(mod);
 }
 
-[[maybe_unused]]bool ModPool::removeSuffix(const Mod& mod) {
-    if(const auto it = std::ranges::find(suffixes, mod); it != suffixes.end()){
-        suffixes.erase(it);
-        return true;
+[[maybe_unused]]void ModPool::removeSuffix(const Mod& mod) {
+    std::vector<Mod> newSuffixes;
+    for (auto w : suffixes) {
+        if (w != mod) {
+            newSuffixes.push_back(w);
+        }
     }
-    return false;
+    suffixes = newSuffixes;
+    removeAffix(mod);
 }
 std::ostream& operator<<(std::ostream& os, const ModPool& modPool)
 {

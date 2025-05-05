@@ -63,6 +63,8 @@ void work() {
     inventory.print_inventory();
     inventory.clear();
     inventory.print_inventory();
+
+    modPool.removePrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
 }
 
 int main() {
