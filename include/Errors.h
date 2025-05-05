@@ -28,25 +28,11 @@ public:
       : PoeError("ResourceError [" + resourceID + "]: " + msg) {}
 };
 
-// Macro-emulation/modeling errors (e.g. invalid key sequences)
-class MacroError : public PoeError {
-public:
-    MacroError(const std::string& macroName, const std::string& msg)
-      : PoeError("MacroError [" + macroName + "]: " + msg) {}
-};
-
 // Crafting-system errors (invalid recipes, currency operations)
 class CraftingError : public PoeError {
 public:
     CraftingError(const std::string& recipeID, const std::string& msg)
       : PoeError("CraftingError [" + recipeID + "]: " + msg) {}
-};
-
-// Emulator or runtime errors (general VM logic, unexpected states)
-class EmulatorError : public PoeError {
-public:
-    EmulatorError(const std::string& context, const std::string& msg)
-      : PoeError("EmulatorError [" + context + "]: " + msg) {}
 };
 
 #endif // POETOOLS_ERRORS_H
