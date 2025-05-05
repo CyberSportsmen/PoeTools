@@ -212,7 +212,7 @@ bool CraftingBench::addRandomModToEquipment(Equipment& target) {
         int ok = 0;
         while (!ok){
             // must be able to add here
-            ok = addModToEquipment(target, prefixpool[rand() % prefixpool.size()]);
+            ok = addPrefixToEquipment(target, prefixpool[rand() % prefixpool.size()]);
         }
     }
     else {
@@ -221,18 +221,47 @@ bool CraftingBench::addRandomModToEquipment(Equipment& target) {
         int ok = 0;
         while (!ok){
             // must be able to add here
-            ok = addModToEquipment(target, sufixpool[rand() % sufixpool.size()]);
+            ok = addSuffixToEquipment(target, sufixpool[rand() % sufixpool.size()]);
         }
     }
     return true;
 }
 
-void CraftingBench::removeAllModFromEquipment(Equipment& target) {
+void CraftingBench::removeAllModsFromEquipment(Equipment& target) {
     // TODO: for scouring orb also modify rarity of item.
     target.setPrefixes(std::vector<Mod>{});
     target.setSuffixes(std::vector<Mod>{});
 }
-bool CraftingBench::removeRandomModFromEquipment(Equipment& target, const Mod& mod) {
-    return false;
+void CraftingBench::removeRandomModFromEquipment(Equipment& target) {
+    auto pref = target.getCurrentPrefixes();
+    auto suff = target.getCurrentSuffixes();
+    auto prefsize = pref.size();
+    auto suffsize = suff.size();
+    int nrofmods = prefsize + suffsize;
+    if (nrofmods <= 0)
+        return;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 1);
+    int which = dist(gen);
+    bool done = 0;
+    int counter = 0;
+    starttrial:
+    counter++;
+    if (which == 0) {
+        // delete from prefixes
+        int place = rand() % prefsize;
+         done = removeModFromEquipment(target, pref[place]);
+    }
+    if (which == 1) {
+        // delete from suffixes
+        int place = rand() % suffsize;
+        done = removeModFromEquipment(target, suff[place]);
+    }
+    if (!done) {
+        which = 1 - which; // switch sides and try again
+        if (counter <= 2)
+            goto starttrial;
+    }
 }
 

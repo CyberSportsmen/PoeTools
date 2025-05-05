@@ -24,8 +24,8 @@ struct CraftingBench
     static bool addPrefixToEquipment(Equipment& target, const Mod& mod);
     static bool addSuffixToEquipment(Equipment& target, const Mod& mod);
     static bool addRandomModToEquipment(Equipment& target);
-    static void removeAllModFromEquipment(Equipment& target);
-    static bool removeRandomModFromEquipment(Equipment& target, const Mod& mod);
+    static void removeRandomModFromEquipment(Equipment& target);
+    static void removeAllModsFromEquipment(Equipment& target);
 };
 
 #endif //CRAFTINGBENCH_H

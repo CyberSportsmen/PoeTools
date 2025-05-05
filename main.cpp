@@ -47,6 +47,15 @@ int main() {
     CraftingBench::addRandomModToEquipment(*sw);
     CraftingBench::addRandomModToEquipment(*sw);
     std::cout << *sw << '\n';
+    //CraftingBench::removeAllModsFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    CraftingBench::removeRandomModFromEquipment(*sw);
+    std::cout << *sw << '\n';
 
     // std::cout << modPool << "\n";
     return 0;
