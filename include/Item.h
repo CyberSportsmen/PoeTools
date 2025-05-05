@@ -54,7 +54,7 @@ public:
 
     friend std::size_t hash_value(const Item &obj);
 
-    ~Item() = default;
+    virtual ~Item() = default;
 };
 
 #endif //ITEM_H

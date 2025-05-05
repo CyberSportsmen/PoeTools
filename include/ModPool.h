@@ -15,12 +15,12 @@ class ModPool
     std::map<unsigned int, Mod> weights; // Each mod has a weight for selection
     // TODO: REMOVE AFFIXES, REDUNDANT!
     std::vector<Mod> affixes; // suffix + prefix
+    void addAffix(const Mod& mod);
 public:
     // adaugă mod-uri
 
     void addPrefix(const Mod& mod);
     void addSuffix(const Mod& mod);
-    void addAffix(const Mod& mod);
 
     // FIXME: completely wrong logic.
     void addWeightedMod(unsigned int weight, const Mod& mod);

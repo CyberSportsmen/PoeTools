@@ -14,9 +14,10 @@
 [[nodiscard]]const std::map<unsigned int, Mod>& ModPool::getWeights() const
 { return weights; }
 
-void ModPool::addPrefix(const Mod& mod) { prefixes.push_back(mod); }
-void ModPool::addSuffix(const Mod& mod) { suffixes.push_back(mod); }
 void ModPool::addAffix(const Mod& mod) { affixes.push_back(mod); }
+
+void ModPool::addPrefix(const Mod& mod) { prefixes.push_back(mod); addAffix(mod); }
+void ModPool::addSuffix(const Mod& mod) { suffixes.push_back(mod); addAffix(mod); }
 
 [[nodiscard]] const std::vector<Mod>& ModPool::getPrefixes() const
 { return prefixes; }

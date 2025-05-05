@@ -15,6 +15,35 @@ Equipment::Equipment() : Item()
     implicits = std::vector<Mod>();
 }
 
+void Equipment::addPrefix(const Mod& mod) {
+    auto new_prefixes = getCurrentPrefixes();
+    new_prefixes.push_back(mod);
+    setPrefixes(new_prefixes);
+}
+
+void Equipment::addSuffix(const Mod& mod) {
+    auto new_suffixes = getCurrentSuffixes();
+    new_suffixes.push_back(mod);
+    setSuffixes(new_suffixes);
+}
+
+
+std::ostream& operator<<(std::ostream& os, Equipment& equipment) {
+    const auto currentPrefixes = equipment.getCurrentPrefixes();
+    const auto currentSuffixes = equipment.getCurrentSuffixes();
+    for (const auto & pref : currentPrefixes) {
+        os << pref << "\n";
+    }
+    for (const auto & suff : currentSuffixes) {
+        os << suff << "\n";
+    }
+    return os;
+}
+
+[[nodiscard]] itemRarities Equipment::get_current_rarity() const {return rarity;}
+
+void Equipment::set_rarity(itemRarities rarity) {this->rarity = rarity;}
+
 void Equipment::setQuality(unsigned int new_quality)
 {
     this->quality = new_quality;
