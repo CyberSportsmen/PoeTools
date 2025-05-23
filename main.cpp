@@ -7,8 +7,8 @@
 #include "include/Item.h"
 #include "utils/enumerators.h"
 #include "include/CraftingBench.h"
-#include "include/Currency.h"
 #include "utils/CurrencyTable.h"
+#include "include/Player.h"
 //-----------------------------------------------------------------
 // TODO: ask about WinMain
 // main function, will probably be made singleton
@@ -26,9 +26,9 @@ void work() {
     modPool.addSuffix(Mod("IncCrit", "Increased Critical Strike Chance", 3));
 
 
-    Item *Sword = new Equipment(20, WEAPON, RARE, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4, modPool);
     //Item Chaos_Orb("Chaos Orb", "Reforges a rare item with new random properties", CURRENCY, 1, 1, 20, 0, 0);
     //Item *chaos_orb = new Currency(RARE, CHAOS, "Chaos Orb", "Reforges a rare item with new random properties");
+    Item *Sword = new Equipment(20, WEAPON, RARE, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4, modPool);
     Item * chaos_orb = CurrencyTable::GetOrb(CHAOS);
     Item * transmutation_orb = CurrencyTable::GetOrb(TRANSMUTATION);
     Inventory inventory;
@@ -38,7 +38,7 @@ void work() {
     inventory.place_item(*chaos_orb); // Ar trebui sa fie stackabile
     //inventory.place_item(*alchemy_orb);
     chaos_orb = CurrencyTable::GetOrb(CHAOS);
-    inventory.print_inventory();
+    //inventory.print_inventory();
     Equipment* sw = dynamic_cast<Equipment*>(Sword);
     //sw->addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
     //CraftingBench::addModToEquipment(*sw, Mod("IncPhyDmg", "Increased Physical Damage", 1));
@@ -57,14 +57,27 @@ void work() {
 
 
     std::cout << *sw << '\n';
-
     inventory.remove_item(*chaos_orb);
     inventory.remove_item(*chaos_orb);
-    inventory.print_inventory();
-    inventory.clear();
-    inventory.print_inventory();
-
+    //inventory.print_inventory();
+    //inventory.clear();
+    //inventory.print_inventory();
     modPool.removePrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
+
+    inventory.clear();
+    inventory.place_item(*Sword);
+    //inventory.print_inventory();
+    Equipment* item_selectat = static_cast<Equipment*>(inventory.get_item(0, 0));
+    std::cout << *item_selectat << '\n';
+
+
+    // Player::get_instance();
+    // Player::get_instance().set_inventory(&inventory);
+    // Player::get_instance().get_inventory()->place_item(*Sword);
+    // Player::get_instance().get_inventory()->print_inventory();
+    // Item *item_selectat = Player::get_instance().get_inventory()->get_item(2, 1);
+    // Player::get_instance().select_item(item_selectat);
+    // std::cout << dynamic_cast<Equipment*>(item_selectat) << '\n';
 }
 
 int main() {
@@ -80,5 +93,4 @@ int main() {
     }
     ErrorHandler::shutdown();
     return EXIT_SUCCESS;
-
 }

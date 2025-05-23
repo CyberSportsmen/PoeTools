@@ -3,6 +3,9 @@
 //
 #include "../include/Currency.h"
 
+#include "../include/Equipment.h"
+#include "../include/Errors.h"
+
 bool operator!=(const Currency &lhs, const Currency &rhs) {
     return !(lhs == rhs);
 }
@@ -20,3 +23,38 @@ std::size_t hash_value(const Currency &obj) {
     seed ^= (seed << 6) + (seed >> 2) + 0x7810A410 + static_cast<std::size_t>(obj.currencyType);
     return seed;
 }
+
+// void Currency::use_item() override {
+//     // can only use an item if
+//     // 1. the item is selected (rmb)
+//     // 2. the item that is under the mouse when we press lmb (to use the currency) is an equipment type
+//     // check which type of currency we are dealing with
+//     Item* target_item = get_item_under_rmb();
+//     auto target_equipment = dynamic_cast<Equipment*>(target_item);
+//     if (target_equipment == nullptr) {
+//         // throw CraftingError(this->get_name() + " used with " + target_item->get_name(), "Target item is not an equipment type!");
+//         return;
+//     }
+//     // we can craft
+//     switch (getCurrencyType()) {
+//         case CHAOS:
+//             use_chaos_orb(target_item);
+//             break;
+//         case TRANSMUTATION:
+//             use_transmutation_orb();
+//             break;
+//         case ALCHEMY:
+//             use_alchemy_orb();
+//             break;
+//         case SCOURING:
+//             use_scouring_orb();
+//             break;
+//         case EXALTED:
+//             user_exalted_orb();
+//             break;
+//         case ANNULMENT:
+//             use_annulment_orb();
+//             break;
+//     }
+//
+// }

@@ -14,6 +14,7 @@ enum itemTypes
     MAP,
     GEM,      // socketable
     SPECIAL,  // quest items, shown in green text
+    INVENTORYSLOT,
 };
 
 const std::map<itemTypes, std::string> itemTypesToString = {

@@ -29,7 +29,10 @@ private:
     ModPool pool; // de aici stim pentru fiecare item ce mod-uri poate primi
 public:
     Equipment();
-    explicit Equipment(unsigned int quality, equipmentTypes type, itemRarities rarity,const std::string& name, const std::string& description, unsigned int width, unsigned int height, unsigned int maxSockets, unsigned int sockets, ModPool pool) : Item(name, description, EQUIPMENT, width, height, 1, maxSockets, sockets), quality(quality), type(type), rarity(rarity), pool(std::move(pool)){};
+    explicit Equipment(unsigned int quality, equipmentTypes type, itemRarities rarity,const std::string& name, const std::string& description, unsigned int width, unsigned int height, unsigned int maxSockets, unsigned int sockets, ModPool pool) : Item(name, description, EQUIPMENT, width, height, 1, maxSockets, sockets), quality(quality), type(type), rarity(rarity), pool(std::move(pool)){}
+
+
+    explicit Equipment(const Item & item);
 
     ~Equipment() override = default;
     // getters
@@ -47,6 +50,9 @@ public:
     void setPrefixes(const std::vector<Mod>& prefixes);
     void setSuffixes(const std::vector<Mod>& suffixes);
     void setImplicits(const std::vector<Mod>& implicits);
+    // equipment cannot inherently be used, we just want to change its modifiers.
+    // if we right click the item we just want to see its stats displayed
+    //void use_item() override; // for now = 0
 };
 
 #endif //EQUIPMENT_H

@@ -32,6 +32,8 @@ public:
         return new Currency(*this);
     }
 
+    //void use_item() override;
+
     friend bool operator==(const Currency &lhs, const Currency &rhs);
     friend bool operator!=(const Currency &lhs, const Currency &rhs);
 };

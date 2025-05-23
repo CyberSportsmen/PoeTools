@@ -16,7 +16,7 @@ Item::Item()
     //texture = ResourceManager::Instance().getTexture(name + ".png");
     name = "emptySlot";
     description = "";
-    type = EQUIPMENT; // should not be relevant for our purposes
+    type = INVENTORYSLOT; // if it is EQUIPMENT it breaks everything
     width = 1;
     height = 1;
     maxStackSize = 1;
@@ -102,6 +102,12 @@ unsigned int Item::get_maxStackSize() const
 {
     return this->maxStackSize;
 }
+
+std::string Item::get_description() const {
+    return description;
+}
+
+
 
 std::ostream& operator<<(std::ostream& os, const Item& item)
 {

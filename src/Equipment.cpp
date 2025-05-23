@@ -18,6 +18,13 @@ Equipment::Equipment() : Item()
     implicits = std::vector<Mod>();
 }
 
+Equipment::Equipment(const Item &item)
+    : Equipment(0, WEAPON, NORMAL, item.get_name(), item.get_description(),
+                item.get_width(), item.get_height(), 6, 1, ModPool{}) {
+}
+
+
+
 // IMPORTANT: USE ONLY FOR TESTING
 void Equipment::addPrefix(const Mod& mod) {
     auto new_prefixes = getCurrentPrefixes();

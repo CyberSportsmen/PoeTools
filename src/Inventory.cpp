@@ -67,14 +67,7 @@ void Inventory::remove_item(const Item& item) {
 
 Inventory::Inventory()
 {
-    // Initialize each cell with a default "empty" generic item.
-    for (unsigned int i = 0; i < 6; i++)
-    {
-        for (unsigned int j = 0; j < 10; j++)
-        {
-            inventory[i][j] = std::make_unique<Item>();
-        }
-    }
+    clear();
 }
 
 void Inventory::clear() {
@@ -116,6 +109,44 @@ void Inventory::place_item(const Item& item)
     std::cout << item.get_name() << " could not be placed in the inventory." << std::endl;
 }
 
+void Inventory::place_item(std::unique_ptr<Item> item)
+{
+    if (tryStackItem(*item))
+        return;
+
+    unsigned int item_width = item->get_width();
+    unsigned int item_height = item->get_height();
+
+    for (unsigned int j = 0; j < 10; j++)
+    {
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            if (check_if_item_fits(*item, i, j))
+            {
+                item_positions[item->get_unique_id()] = {i, j};
+
+                // Move the unique_ptr into the top-left cell
+                inventory[i][j] = std::move(item);
+
+                // Fill other cells with nullptr or a shared indicator
+                for (unsigned int k = i; k < i + item_height; k++)
+                {
+                    for (unsigned int l = j; l < j + item_width; l++)
+                    {
+                        if (k == i && l == j) continue; // skip top-left
+                        inventory[k][l] = nullptr; // or some marker if needed
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    std::cout << "Item could not be placed in the inventory.\n";
+}
+
+
+
 
 bool Inventory::inside(unsigned int x, unsigned int y)
 {
@@ -154,4 +185,10 @@ std::ostream& operator<<(std::ostream& os, const Inventory& inventory)
     }
     return os;
 }
+
+Item *Inventory::get_item(unsigned int row, unsigned int column) const {
+    std::cout << inventory[row][column]->get_name() << "\n";
+    return inventory[row][column].get();
+}
+
 

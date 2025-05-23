@@ -25,9 +25,11 @@ public:
     Inventory();
     void clear();
     void place_item(const Item& item);
+    void place_item(std::unique_ptr<Item> item);
     void remove_item(const Item& item);
     void print_inventory() const;
     friend std::ostream& operator<<(std::ostream& os, const Inventory& inventory);
+    Item* get_item(unsigned int row, unsigned int column) const;
 
 };
 

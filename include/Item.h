@@ -10,6 +10,7 @@
 
 class Item
 {
+protected:
     static unsigned int item_count;
     std::string name;
     std::string description;
@@ -43,6 +44,10 @@ public:
     unsigned int get_width() const;
     unsigned int get_height() const;
     unsigned int get_unique_id() const;
+    std::string get_description() const;
+    // ABANDONING THIS IDEA WTF IS GOING ON????? crapa programu daca fac functie virtuala aici nu mai pot ma dau batut, nu stiu ce dracu e cu virtual, vina mea, stiu, asta este
+    //virtual void use_item();
+
     // [[maybe_unused]]void print_quality() const { std::cout << "Quality: " << quality << std::endl; }
     // [[maybe_unused]]void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
     // [[maybe_unused]]void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }

@@ -81,6 +81,8 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         include/Errors.h
         include/ErrorHandler.h
         src/ErrorHandler.cpp
+        include/Player.h
+        src/Player.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
