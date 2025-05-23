@@ -67,9 +67,35 @@ void work() {
     inventory.clear();
     inventory.place_item(*Sword);
     //inventory.print_inventory();
-    Equipment* item_selectat = static_cast<Equipment*>(inventory.get_item(0, 0));
+    Equipment* item_selectat = dynamic_cast<Equipment*>(inventory.get_item(0, 0));
     std::cout << *item_selectat << '\n';
 
+
+    inventory.clear();
+    inventory.place_item(*Sword); // *Sword is an Equipment object
+    // inventory.print_inventory(); // Optional: for debugging
+
+    // Item* base_item_ptr = inventory.get_item(0, 0); // Get base pointer
+
+    // if (base_item_ptr) { // Check if an item exists at that slot
+    //     std::cout << "Retrieved item from inventory: " << base_item_ptr->get_name() << std::endl;
+    //     Equipment* item_selectat = dynamic_cast<Equipment*>(base_item_ptr); // Safe downcast
+    //
+    //     if (item_selectat) { // Check if cast was successful
+    //         std::cout << "Item is an Equipment. Displaying details:\n";
+    //         std::cout << *item_selectat << '\n'; // Should now work correctly
+    //     } else {
+    //         std::cout << "Item is not an Equipment. Actual type: " << typeid(*base_item_ptr).name() << std::endl;
+    //     }
+    // } else {
+    //     std::cout << "No item found at inventory[0][0]." << std::endl;
+    // }
+
+    // IMPORTANT: Memory Management for Sword
+    // Since 'Sword' was allocated with 'new' and inventory.place_item(*Sword) creates a CLONE,
+    // the original 'Sword' object is still your responsibility to delete.
+    //delete Sword;
+    //Sword = nullptr; // Good practice to nullify dangling pointers
 
     // Player::get_instance();
     // Player::get_instance().set_inventory(&inventory);

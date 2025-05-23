@@ -28,9 +28,7 @@ public:
     Currency(Currency&&) = default;
     Currency() = delete;
 
-    Item* clone() const{
-        return new Currency(*this);
-    }
+    Item* clone() const override; // Ensure it's marked override
 
     //void use_item() override;
 

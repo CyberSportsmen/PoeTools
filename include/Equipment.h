@@ -35,6 +35,7 @@ public:
     explicit Equipment(const Item & item);
 
     ~Equipment() override = default;
+    Item* clone() const override; // Override clone method
     // getters
     ModPool& getModPool() { return pool; }
     std::vector<Mod>& getCurrentPrefixes(){return this->prefixes;}

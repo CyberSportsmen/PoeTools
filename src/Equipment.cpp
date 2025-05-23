@@ -77,6 +77,13 @@ std::ostream& operator<<(std::ostream& os, Equipment& equipment) {
     return os;
 }
 
+Item* Equipment::clone() const {
+    Equipment* newEquipment = new Equipment(*this); // Create a copy
+    newEquipment->unique_id = ++item_count; // Assign a new unique ID
+    return newEquipment;
+}
+
+
 [[nodiscard]] itemRarities Equipment::get_current_rarity() const {return rarity;}
 
 void Equipment::set_rarity(itemRarities rarity) {this->rarity = rarity;}

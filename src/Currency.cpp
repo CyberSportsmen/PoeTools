@@ -24,6 +24,12 @@ std::size_t hash_value(const Currency &obj) {
     return seed;
 }
 
+Item* Currency::clone() const {
+    Currency* newCurrency = new Currency(*this); // Create a copy
+    newCurrency->unique_id = ++item_count; // Assign a new unique ID
+    return newCurrency;
+}
+
 // void Currency::use_item() override {
 //     // can only use an item if
 //     // 1. the item is selected (rmb)

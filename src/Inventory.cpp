@@ -26,7 +26,8 @@ bool Inventory::check_if_item_fits(const Item& item, unsigned int row, unsigned 
 
 void Inventory::set_item_in_inventory_slot(const Item& item, unsigned int row, unsigned int column)
 {
-    inventory[row][column] = std::make_unique<Item>(item);
+    // inventory[row][column] = std::make_unique<Item>(item); // Old slicing line
+    inventory[row][column] = std::unique_ptr<Item>(item.clone()); // Use clone for polymorphic copy
 }
 
 bool Inventory::tryStackItem(const Item& item) const
@@ -75,9 +76,10 @@ void Inventory::clear() {
     {
         for (unsigned int j = 0; j < 10; j++)
         {
-            inventory[i][j] = std::make_unique<Item>();
+            inventory[i][j] = std::make_unique<Item>(); // Creates default Item ("emptySlot")
         }
     }
+    item_positions.clear(); // Good practice to clear this map too
 }
 
 void Inventory::place_item(const Item& item)

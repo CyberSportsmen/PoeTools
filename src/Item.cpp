@@ -124,6 +124,12 @@ std::ostream& operator<<(std::ostream& os, const Item& item)
     return os;
 }
 
+Item* Item::clone() const {
+    Item* newItem = new Item(*this); // Create a copy using the copy constructor
+    newItem->unique_id = ++item_count; // Assign a new unique ID to the clone
+    return newItem;
+}
+
 bool operator==(const Item& lhs, const Item& rhs)
 {
     return lhs.name == rhs.name &&

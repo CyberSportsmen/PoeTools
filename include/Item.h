@@ -1,7 +1,3 @@
-//
-// Created by Alex on 2 Apr 2025.
-//
-
 #ifndef ITEM_H
 #define ITEM_H
 
@@ -15,7 +11,7 @@ protected:
     std::string name;
     std::string description;
     itemTypes type;
-    unsigned int unique_id{};
+    unsigned int unique_id{}; // Make sure this can be modified by clone in derived classes if needed
     unsigned int width;
     unsigned int height;
     unsigned int maxStackSize;
@@ -32,12 +28,6 @@ public:
     Item& operator=(const Item& other) = default;
     Item& operator=(Item&& other) noexcept = default;
     const std::string& get_name() const;
-    // [[maybe_unused]]void set_name(const std::string& newName) { name = newName; } //nu redenumim item-ul inca (la crafting se va redenumi)
-    // [[maybe_unused]]void set_description(const std::string& newDescription) { this->description = newDescription; }
-    // [[maybe_unused]]itemTypes get_type() const { return type; }
-    // [[maybe_unused]]void set_type(itemTypes type) { this->type = type; }
-    // [[maybe_unused]]sf::Texture get_texture() const { return texture; }
-    // [[maybe_unused]]void set_texture(const sf::Texture& texture) { this->texture = texture; }
     unsigned int get_current_stack_size() const;
     void set_current_stack_size(unsigned int current_stack_size);
     unsigned int get_maxStackSize() const;
@@ -45,13 +35,7 @@ public:
     unsigned int get_height() const;
     unsigned int get_unique_id() const;
     std::string get_description() const;
-    // ABANDONING THIS IDEA WTF IS GOING ON????? crapa programu daca fac functie virtuala aici nu mai pot ma dau batut, nu stiu ce dracu e cu virtual, vina mea, stiu, asta este
-    //virtual void use_item();
-
-    // [[maybe_unused]]void print_quality() const { std::cout << "Quality: " << quality << std::endl; }
-    // [[maybe_unused]]void print_item_level() const { std::cout << "Item Level: " << itemLevel << std::endl; }
-    // [[maybe_unused]]void print_size() const { std::cout << "Width: " << width << " Height: " << height << std::endl; }
-    // [[maybe_unused]]void print_unique_id() const { std::cout << "Unique ID: " << unique_id << std::endl; }
+    
     friend std::ostream& operator<<(std::ostream& os, const Item& item);
     friend bool operator==(const Item& lhs, const Item& rhs);
     friend bool operator!=(const Item& lhs, const Item& rhs);
@@ -59,7 +43,8 @@ public:
 
     friend std::size_t hash_value(const Item &obj);
 
-    virtual ~Item() = default;
+    virtual ~Item() = default; // Virtual destructor is already correctly in place
+    virtual Item* clone() const; // Declare virtual clone method
 };
 
 #endif //ITEM_H
