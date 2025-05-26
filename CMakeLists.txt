@@ -83,6 +83,11 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/ErrorHandler.cpp
         include/Player.h
         src/Player.cpp
+        include/ICurrencyEffectStrategy.h
+        include/TransmutationOrbStrategy.h
+        src/TransmutationOrbStrategy.cpp
+        include/CurrencyProcessor.h
+        src/CurrencyProcessor.cpp
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )

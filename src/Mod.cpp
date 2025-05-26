@@ -42,9 +42,9 @@ bool operator!=(const Mod& lhs, const Mod& rhs)
 
 std::ostream& operator<<(std::ostream& os, const Mod& mod)
 {
-    os << "Short Name: " << mod.shortName << std::endl;
-    os << "Long Name: " << mod.longName << std::endl;
-    os << "Tier: " << mod.tier << std::endl;
+    os << "-" << mod.shortName << " (";
+    //os << "Long Name: " << mod.longName << std::endl;
+    os << "Tier: " << mod.tier << ")" <<std::endl;
     return os;
 }
 

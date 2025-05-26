@@ -7,12 +7,46 @@
 #include "include/Item.h"
 #include "utils/enumerators.h"
 #include "include/CraftingBench.h"
+#include "include/CurrencyProcessor.h"
 #include "utils/CurrencyTable.h"
 #include "include/Player.h"
 //-----------------------------------------------------------------
 // TODO: ask about WinMain
 // main function, will probably be made singleton
 //-----------------------------------------------------------------
+
+
+void test_currency_processor() {
+    // NEVER EVER USE AN EMPTY MODPOOL!
+    ModPool basicModPool; // Un ModPool gol sau cu câteva moduri de test
+    basicModPool.addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    basicModPool.addPrefix(Mod("AddFirDmg", "Adds Fire Damage", 2));
+    basicModPool.addPrefix(Mod("IncAtkSpd", "Increased Attack Speed", 3));
+    basicModPool.addSuffix(Mod("IncLife", "Increased Life", 1));
+    basicModPool.addSuffix(Mod("IncEva", "Increased Evasion Rating", 1));
+    basicModPool.addSuffix(Mod("IncCrit", "Increased Critical Strike Chance", 3));
+
+    auto* sword = new Equipment(0, WEAPON, NORMAL, "Basic Sword", "A simple sword.", 1, 3, 0, 0, basicModPool);
+
+    auto* transmuteOrb = dynamic_cast<Currency*>(CurrencyTable::GetOrb(TRANSMUTATION)); // Clonezi pentru a avea o instanță unică
+
+    CurrencyProcessor processor;
+
+    std::cout << "Sword before transmutation: Rarity " << itemRaritiesToString.at(sword->get_current_rarity()) << std::endl;
+    std::cout << *sword << std::endl;
+
+    // Folosește moneda pe item
+    bool result = processor.use_currency(transmuteOrb, sword);
+    if (result) {
+        std::cout << "Sword after transmutation: Rarity " << itemRaritiesToString.at(sword->get_current_rarity()) << std::endl;
+        std::cout << *sword << std::endl;
+    } else {
+        std::cout << "Failed to apply Transmutation Orb." << std::endl;
+    }
+
+    delete sword;
+    delete transmuteOrb;
+}
 
 void work() {
     // Creez ModPool
@@ -29,88 +63,33 @@ void work() {
     //Item Chaos_Orb("Chaos Orb", "Reforges a rare item with new random properties", CURRENCY, 1, 1, 20, 0, 0);
     //Item *chaos_orb = new Currency(RARE, CHAOS, "Chaos Orb", "Reforges a rare item with new random properties");
     Item *Sword = new Equipment(20, WEAPON, RARE, "Sword", "sabiuta care taie foarte tare si bine", 2, 6, 6, 4, modPool);
-    Item * chaos_orb = CurrencyTable::GetOrb(CHAOS);
-    Item * transmutation_orb = CurrencyTable::GetOrb(TRANSMUTATION);
     Inventory inventory;
-    inventory.place_item(*chaos_orb);
     inventory.place_item(*Sword);
-    inventory.place_item(*transmutation_orb);
-    inventory.place_item(*chaos_orb); // Ar trebui sa fie stackabile
-    //inventory.place_item(*alchemy_orb);
-    chaos_orb = CurrencyTable::GetOrb(CHAOS);
-    //inventory.print_inventory();
-    Equipment* sw = dynamic_cast<Equipment*>(Sword);
-    //sw->addPrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
-    //CraftingBench::addModToEquipment(*sw, Mod("IncPhyDmg", "Increased Physical Damage", 1));
-    //CraftingBench::addModToEquipment(*sw, Mod("IncCrit", "Increased Critical Strike Chance", 3));
-    CraftingBench::addRandomModToEquipment(*sw);
-    CraftingBench::addRandomModToEquipment(*sw);
-    CraftingBench::addRandomModToEquipment(*sw);
-    CraftingBench::addRandomModToEquipment(*sw);
-    CraftingBench::addRandomModToEquipment(*sw);
-    CraftingBench::addRandomModToEquipment(*sw);
-    std::cout << *sw << '\n';
-    //CraftingBench::removeAllModsFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
-    CraftingBench::removeRandomModFromEquipment(*sw);
 
-
-    std::cout << *sw << '\n';
-    inventory.remove_item(*chaos_orb);
-    inventory.remove_item(*chaos_orb);
-    //inventory.print_inventory();
-    //inventory.clear();
-    //inventory.print_inventory();
-    modPool.removePrefix(Mod("IncPhyDmg", "Increased Physical Damage", 1));
+    auto* sw = dynamic_cast<Equipment*>(Sword);
+    CraftingBench::addRandomModToEquipment(*sw);
+    CraftingBench::addRandomModToEquipment(*sw);
 
     inventory.clear();
     inventory.place_item(*Sword);
-    //inventory.print_inventory();
-    Equipment* item_selectat = dynamic_cast<Equipment*>(inventory.get_item(0, 0));
-    std::cout << *item_selectat << '\n';
 
 
-    inventory.clear();
-    inventory.place_item(*Sword); // *Sword is an Equipment object
-    // inventory.print_inventory(); // Optional: for debugging
+    Player::get_instance();
+    Player::get_instance().set_inventory(&inventory);
+    Player::get_instance().get_inventory()->place_item(*Sword);
+    Player::get_instance().get_inventory()->print_inventory();
+    auto *item_selectat = Player::get_instance().get_inventory()->get_item(2, 1);
+    Player::get_instance().select_item(item_selectat);
+    std::cout << *dynamic_cast<Equipment*>(item_selectat) << '\n';
 
-    // Item* base_item_ptr = inventory.get_item(0, 0); // Get base pointer
-
-    // if (base_item_ptr) { // Check if an item exists at that slot
-    //     std::cout << "Retrieved item from inventory: " << base_item_ptr->get_name() << std::endl;
-    //     Equipment* item_selectat = dynamic_cast<Equipment*>(base_item_ptr); // Safe downcast
-    //
-    //     if (item_selectat) { // Check if cast was successful
-    //         std::cout << "Item is an Equipment. Displaying details:\n";
-    //         std::cout << *item_selectat << '\n'; // Should now work correctly
-    //     } else {
-    //         std::cout << "Item is not an Equipment. Actual type: " << typeid(*base_item_ptr).name() << std::endl;
-    //     }
-    // } else {
-    //     std::cout << "No item found at inventory[0][0]." << std::endl;
-    // }
-
-    // IMPORTANT: Memory Management for Sword
-    // Since 'Sword' was allocated with 'new' and inventory.place_item(*Sword) creates a CLONE,
-    // the original 'Sword' object is still your responsibility to delete.
-    //delete Sword;
-    //Sword = nullptr; // Good practice to nullify dangling pointers
-
-    // Player::get_instance();
-    // Player::get_instance().set_inventory(&inventory);
-    // Player::get_instance().get_inventory()->place_item(*Sword);
-    // Player::get_instance().get_inventory()->print_inventory();
-    // Item *item_selectat = Player::get_instance().get_inventory()->get_item(2, 1);
-    // Player::get_instance().select_item(item_selectat);
-    // std::cout << dynamic_cast<Equipment*>(item_selectat) << '\n';
+    test_currency_processor();
 }
 
 int main() {
-
     ErrorHandler::initLog("PoeTools.log");
     try {
-        auto loadAll() -> ResourceManager;
+        // NU mai este nevoie de nicio linie aici pentru ResourceManager
+        // Instanța ResourceManager va fi creata
         work();
     }
     catch (const std::exception& e) {

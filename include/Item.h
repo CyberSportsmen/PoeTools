@@ -35,7 +35,6 @@ public:
     unsigned int get_height() const;
     unsigned int get_unique_id() const;
     std::string get_description() const;
-    
     friend std::ostream& operator<<(std::ostream& os, const Item& item);
     friend bool operator==(const Item& lhs, const Item& rhs);
     friend bool operator!=(const Item& lhs, const Item& rhs);
