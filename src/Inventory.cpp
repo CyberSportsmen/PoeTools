@@ -189,7 +189,7 @@ std::ostream& operator<<(std::ostream& os, const Inventory& inventory)
 }
 
 Item *Inventory::get_item(unsigned int row, unsigned int column) const {
-    std::cout << inventory[row][column]->get_name() << "\n";
+    //std::cout << inventory[row][column]->get_name() << "\n";
     return inventory[row][column].get();
 }
 

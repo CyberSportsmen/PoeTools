@@ -88,6 +88,8 @@ add_executable(${MAIN_EXECUTABLE_NAME}
         src/TransmutationOrbStrategy.cpp
         include/CurrencyProcessor.h
         src/CurrencyProcessor.cpp
+        include/ItemFilter.h
+        include/InventoryActions.h
 )
 
 # NOTE: Add all defined targets (e.g. executables, libraries, etc. )
